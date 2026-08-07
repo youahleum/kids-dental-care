@@ -1,0 +1,23 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../domain/models/child.dart';
+import '../domain/repositories/child_repository.dart';
+import 'local/app_database.dart';
+import 'repositories_impl/child_repository_impl.dart';
+
+/// 앱 전역 데이터 provider. 기준: PLAN.md 5장 (계층 분리)
+
+final appDatabaseProvider = Provider<AppDatabase>((ref) {
+  final db = AppDatabase();
+  ref.onDispose(db.close);
+  return db;
+});
+
+final childRepositoryProvider = Provider<ChildRepository>((ref) {
+  return ChildRepositoryImpl(ref.watch(appDatabaseProvider));
+});
+
+/// 자녀 목록 실시간 스트림.
+final childrenProvider = StreamProvider<List<Child>>((ref) {
+  return ref.watch(childRepositoryProvider).watchAll();
+});
