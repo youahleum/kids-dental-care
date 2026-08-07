@@ -29,13 +29,25 @@ class PreventiveTasks extends Table {
   TextColumn get note => text().nullable()();
 }
 
-@DriftDatabase(tables: [Children, PreventiveTasks])
+/// 검진 이력 테이블. 기준 문서: PLAN.md 6장
+/// (도메인 모델 CheckupRecord와의 이름 충돌을 피해 row 클래스명을 지정)
+@DataClassName('CheckupRecordRow')
+class CheckupRecords extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get childId =>
+      integer().references(Children, #id, onDelete: KeyAction.cascade)();
+  DateTimeColumn get date => dateTime()();
+  TextColumn get clinicName => text().nullable()();
+  TextColumn get memo => text().nullable()();
+}
+
+@DriftDatabase(tables: [Children, PreventiveTasks, CheckupRecords])
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor])
       : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -43,6 +55,9 @@ class AppDatabase extends _$AppDatabase {
         onUpgrade: (m, from, to) async {
           if (from < 2) {
             await m.createTable(preventiveTasks);
+          }
+          if (from < 3) {
+            await m.createTable(checkupRecords);
           }
         },
         beforeOpen: (details) async {

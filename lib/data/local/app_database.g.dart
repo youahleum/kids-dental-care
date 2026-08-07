@@ -920,6 +920,354 @@ class PreventiveTasksCompanion extends UpdateCompanion<PreventiveTaskRow> {
   }
 }
 
+class $CheckupRecordsTable extends CheckupRecords
+    with TableInfo<$CheckupRecordsTable, CheckupRecordRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CheckupRecordsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _childIdMeta = const VerificationMeta(
+    'childId',
+  );
+  @override
+  late final GeneratedColumn<int> childId = GeneratedColumn<int>(
+    'child_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES children (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _dateMeta = const VerificationMeta('date');
+  @override
+  late final GeneratedColumn<DateTime> date = GeneratedColumn<DateTime>(
+    'date',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _clinicNameMeta = const VerificationMeta(
+    'clinicName',
+  );
+  @override
+  late final GeneratedColumn<String> clinicName = GeneratedColumn<String>(
+    'clinic_name',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _memoMeta = const VerificationMeta('memo');
+  @override
+  late final GeneratedColumn<String> memo = GeneratedColumn<String>(
+    'memo',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, childId, date, clinicName, memo];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'checkup_records';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<CheckupRecordRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('child_id')) {
+      context.handle(
+        _childIdMeta,
+        childId.isAcceptableOrUnknown(data['child_id']!, _childIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_childIdMeta);
+    }
+    if (data.containsKey('date')) {
+      context.handle(
+        _dateMeta,
+        date.isAcceptableOrUnknown(data['date']!, _dateMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_dateMeta);
+    }
+    if (data.containsKey('clinic_name')) {
+      context.handle(
+        _clinicNameMeta,
+        clinicName.isAcceptableOrUnknown(data['clinic_name']!, _clinicNameMeta),
+      );
+    }
+    if (data.containsKey('memo')) {
+      context.handle(
+        _memoMeta,
+        memo.isAcceptableOrUnknown(data['memo']!, _memoMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  CheckupRecordRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CheckupRecordRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      childId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}child_id'],
+      )!,
+      date: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}date'],
+      )!,
+      clinicName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}clinic_name'],
+      ),
+      memo: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}memo'],
+      ),
+    );
+  }
+
+  @override
+  $CheckupRecordsTable createAlias(String alias) {
+    return $CheckupRecordsTable(attachedDatabase, alias);
+  }
+}
+
+class CheckupRecordRow extends DataClass
+    implements Insertable<CheckupRecordRow> {
+  final int id;
+  final int childId;
+  final DateTime date;
+  final String? clinicName;
+  final String? memo;
+  const CheckupRecordRow({
+    required this.id,
+    required this.childId,
+    required this.date,
+    this.clinicName,
+    this.memo,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['child_id'] = Variable<int>(childId);
+    map['date'] = Variable<DateTime>(date);
+    if (!nullToAbsent || clinicName != null) {
+      map['clinic_name'] = Variable<String>(clinicName);
+    }
+    if (!nullToAbsent || memo != null) {
+      map['memo'] = Variable<String>(memo);
+    }
+    return map;
+  }
+
+  CheckupRecordsCompanion toCompanion(bool nullToAbsent) {
+    return CheckupRecordsCompanion(
+      id: Value(id),
+      childId: Value(childId),
+      date: Value(date),
+      clinicName: clinicName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(clinicName),
+      memo: memo == null && nullToAbsent ? const Value.absent() : Value(memo),
+    );
+  }
+
+  factory CheckupRecordRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CheckupRecordRow(
+      id: serializer.fromJson<int>(json['id']),
+      childId: serializer.fromJson<int>(json['childId']),
+      date: serializer.fromJson<DateTime>(json['date']),
+      clinicName: serializer.fromJson<String?>(json['clinicName']),
+      memo: serializer.fromJson<String?>(json['memo']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'childId': serializer.toJson<int>(childId),
+      'date': serializer.toJson<DateTime>(date),
+      'clinicName': serializer.toJson<String?>(clinicName),
+      'memo': serializer.toJson<String?>(memo),
+    };
+  }
+
+  CheckupRecordRow copyWith({
+    int? id,
+    int? childId,
+    DateTime? date,
+    Value<String?> clinicName = const Value.absent(),
+    Value<String?> memo = const Value.absent(),
+  }) => CheckupRecordRow(
+    id: id ?? this.id,
+    childId: childId ?? this.childId,
+    date: date ?? this.date,
+    clinicName: clinicName.present ? clinicName.value : this.clinicName,
+    memo: memo.present ? memo.value : this.memo,
+  );
+  CheckupRecordRow copyWithCompanion(CheckupRecordsCompanion data) {
+    return CheckupRecordRow(
+      id: data.id.present ? data.id.value : this.id,
+      childId: data.childId.present ? data.childId.value : this.childId,
+      date: data.date.present ? data.date.value : this.date,
+      clinicName: data.clinicName.present
+          ? data.clinicName.value
+          : this.clinicName,
+      memo: data.memo.present ? data.memo.value : this.memo,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CheckupRecordRow(')
+          ..write('id: $id, ')
+          ..write('childId: $childId, ')
+          ..write('date: $date, ')
+          ..write('clinicName: $clinicName, ')
+          ..write('memo: $memo')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, childId, date, clinicName, memo);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CheckupRecordRow &&
+          other.id == this.id &&
+          other.childId == this.childId &&
+          other.date == this.date &&
+          other.clinicName == this.clinicName &&
+          other.memo == this.memo);
+}
+
+class CheckupRecordsCompanion extends UpdateCompanion<CheckupRecordRow> {
+  final Value<int> id;
+  final Value<int> childId;
+  final Value<DateTime> date;
+  final Value<String?> clinicName;
+  final Value<String?> memo;
+  const CheckupRecordsCompanion({
+    this.id = const Value.absent(),
+    this.childId = const Value.absent(),
+    this.date = const Value.absent(),
+    this.clinicName = const Value.absent(),
+    this.memo = const Value.absent(),
+  });
+  CheckupRecordsCompanion.insert({
+    this.id = const Value.absent(),
+    required int childId,
+    required DateTime date,
+    this.clinicName = const Value.absent(),
+    this.memo = const Value.absent(),
+  }) : childId = Value(childId),
+       date = Value(date);
+  static Insertable<CheckupRecordRow> custom({
+    Expression<int>? id,
+    Expression<int>? childId,
+    Expression<DateTime>? date,
+    Expression<String>? clinicName,
+    Expression<String>? memo,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (childId != null) 'child_id': childId,
+      if (date != null) 'date': date,
+      if (clinicName != null) 'clinic_name': clinicName,
+      if (memo != null) 'memo': memo,
+    });
+  }
+
+  CheckupRecordsCompanion copyWith({
+    Value<int>? id,
+    Value<int>? childId,
+    Value<DateTime>? date,
+    Value<String?>? clinicName,
+    Value<String?>? memo,
+  }) {
+    return CheckupRecordsCompanion(
+      id: id ?? this.id,
+      childId: childId ?? this.childId,
+      date: date ?? this.date,
+      clinicName: clinicName ?? this.clinicName,
+      memo: memo ?? this.memo,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (childId.present) {
+      map['child_id'] = Variable<int>(childId.value);
+    }
+    if (date.present) {
+      map['date'] = Variable<DateTime>(date.value);
+    }
+    if (clinicName.present) {
+      map['clinic_name'] = Variable<String>(clinicName.value);
+    }
+    if (memo.present) {
+      map['memo'] = Variable<String>(memo.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CheckupRecordsCompanion(')
+          ..write('id: $id, ')
+          ..write('childId: $childId, ')
+          ..write('date: $date, ')
+          ..write('clinicName: $clinicName, ')
+          ..write('memo: $memo')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -927,6 +1275,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $PreventiveTasksTable preventiveTasks = $PreventiveTasksTable(
     this,
   );
+  late final $CheckupRecordsTable checkupRecords = $CheckupRecordsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -934,6 +1283,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   List<DatabaseSchemaEntity> get allSchemaEntities => [
     children,
     preventiveTasks,
+    checkupRecords,
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
@@ -943,6 +1293,13 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         limitUpdateKind: UpdateKind.delete,
       ),
       result: [TableUpdate('preventive_tasks', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'children',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('checkup_records', kind: UpdateKind.delete)],
     ),
   ]);
 }
@@ -985,6 +1342,24 @@ final class $$ChildrenTableReferences
     final cache = $_typedResult.readTableOrNull(
       _preventiveTasksRefsTable($_db),
     );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$CheckupRecordsTable, List<CheckupRecordRow>>
+  _checkupRecordsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.checkupRecords,
+    aliasName: 'children__id__checkup_records__child_id',
+  );
+
+  $$CheckupRecordsTableProcessedTableManager get checkupRecordsRefs {
+    final manager = $$CheckupRecordsTableTableManager(
+      $_db,
+      $_db.checkupRecords,
+    ).filter((f) => f.childId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_checkupRecordsRefsTable($_db));
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -1046,6 +1421,31 @@ class $$ChildrenTableFilterComposer
           }) => $$PreventiveTasksTableFilterComposer(
             $db: $db,
             $table: $db.preventiveTasks,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> checkupRecordsRefs(
+    Expression<bool> Function($$CheckupRecordsTableFilterComposer f) f,
+  ) {
+    final $$CheckupRecordsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.checkupRecords,
+      getReferencedColumn: (t) => t.childId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CheckupRecordsTableFilterComposer(
+            $db: $db,
+            $table: $db.checkupRecords,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -1149,6 +1549,31 @@ class $$ChildrenTableAnnotationComposer
     );
     return f(composer);
   }
+
+  Expression<T> checkupRecordsRefs<T extends Object>(
+    Expression<T> Function($$CheckupRecordsTableAnnotationComposer a) f,
+  ) {
+    final $$CheckupRecordsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.checkupRecords,
+      getReferencedColumn: (t) => t.childId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CheckupRecordsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.checkupRecords,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$ChildrenTableTableManager
@@ -1164,7 +1589,10 @@ class $$ChildrenTableTableManager
           $$ChildrenTableUpdateCompanionBuilder,
           (ChildrenData, $$ChildrenTableReferences),
           ChildrenData,
-          PrefetchHooks Function({bool preventiveTasksRefs})
+          PrefetchHooks Function({
+            bool preventiveTasksRefs,
+            bool checkupRecordsRefs,
+          })
         > {
   $$ChildrenTableTableManager(_$AppDatabase db, $ChildrenTable table)
     : super(
@@ -1217,37 +1645,63 @@ class $$ChildrenTableTableManager
                 ),
               )
               .toList(),
-          prefetchHooksCallback: ({preventiveTasksRefs = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [
-                if (preventiveTasksRefs) db.preventiveTasks,
-              ],
-              addJoins: null,
-              getPrefetchedDataCallback: (items) async {
-                return [
-                  if (preventiveTasksRefs)
-                    await $_getPrefetchedData<
-                      ChildrenData,
-                      $ChildrenTable,
-                      PreventiveTaskRow
-                    >(
-                      currentTable: table,
-                      referencedTable: $$ChildrenTableReferences
-                          ._preventiveTasksRefsTable(db),
-                      managerFromTypedResult: (p0) => $$ChildrenTableReferences(
-                        db,
-                        table,
-                        p0,
-                      ).preventiveTasksRefs,
-                      referencedItemsForCurrentItem: (item, referencedItems) =>
-                          referencedItems.where((e) => e.childId == item.id),
-                      typedResults: items,
-                    ),
-                ];
+          prefetchHooksCallback:
+              ({preventiveTasksRefs = false, checkupRecordsRefs = false}) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (preventiveTasksRefs) db.preventiveTasks,
+                    if (checkupRecordsRefs) db.checkupRecords,
+                  ],
+                  addJoins: null,
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (preventiveTasksRefs)
+                        await $_getPrefetchedData<
+                          ChildrenData,
+                          $ChildrenTable,
+                          PreventiveTaskRow
+                        >(
+                          currentTable: table,
+                          referencedTable: $$ChildrenTableReferences
+                              ._preventiveTasksRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$ChildrenTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).preventiveTasksRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.childId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (checkupRecordsRefs)
+                        await $_getPrefetchedData<
+                          ChildrenData,
+                          $ChildrenTable,
+                          CheckupRecordRow
+                        >(
+                          currentTable: table,
+                          referencedTable: $$ChildrenTableReferences
+                              ._checkupRecordsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$ChildrenTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).checkupRecordsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.childId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
               },
-            );
-          },
         ),
       );
 }
@@ -1264,7 +1718,10 @@ typedef $$ChildrenTableProcessedTableManager =
       $$ChildrenTableUpdateCompanionBuilder,
       (ChildrenData, $$ChildrenTableReferences),
       ChildrenData,
-      PrefetchHooks Function({bool preventiveTasksRefs})
+      PrefetchHooks Function({
+        bool preventiveTasksRefs,
+        bool checkupRecordsRefs,
+      })
     >;
 typedef $$PreventiveTasksTableCreateCompanionBuilder =
     PreventiveTasksCompanion Function({
@@ -1651,6 +2108,327 @@ typedef $$PreventiveTasksTableProcessedTableManager =
       PreventiveTaskRow,
       PrefetchHooks Function({bool childId})
     >;
+typedef $$CheckupRecordsTableCreateCompanionBuilder =
+    CheckupRecordsCompanion Function({
+      Value<int> id,
+      required int childId,
+      required DateTime date,
+      Value<String?> clinicName,
+      Value<String?> memo,
+    });
+typedef $$CheckupRecordsTableUpdateCompanionBuilder =
+    CheckupRecordsCompanion Function({
+      Value<int> id,
+      Value<int> childId,
+      Value<DateTime> date,
+      Value<String?> clinicName,
+      Value<String?> memo,
+    });
+
+final class $$CheckupRecordsTableReferences
+    extends
+        BaseReferences<_$AppDatabase, $CheckupRecordsTable, CheckupRecordRow> {
+  $$CheckupRecordsTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $ChildrenTable _childIdTable(_$AppDatabase db) =>
+      db.children.createAlias('checkup_records__child_id__children__id');
+
+  $$ChildrenTableProcessedTableManager get childId {
+    final $_column = $_itemColumn<int>('child_id')!;
+
+    final manager = $$ChildrenTableTableManager(
+      $_db,
+      $_db.children,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_childIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$CheckupRecordsTableFilterComposer
+    extends Composer<_$AppDatabase, $CheckupRecordsTable> {
+  $$CheckupRecordsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get clinicName => $composableBuilder(
+    column: $table.clinicName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get memo => $composableBuilder(
+    column: $table.memo,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$ChildrenTableFilterComposer get childId {
+    final $$ChildrenTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.childId,
+      referencedTable: $db.children,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ChildrenTableFilterComposer(
+            $db: $db,
+            $table: $db.children,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$CheckupRecordsTableOrderingComposer
+    extends Composer<_$AppDatabase, $CheckupRecordsTable> {
+  $$CheckupRecordsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get clinicName => $composableBuilder(
+    column: $table.clinicName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get memo => $composableBuilder(
+    column: $table.memo,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$ChildrenTableOrderingComposer get childId {
+    final $$ChildrenTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.childId,
+      referencedTable: $db.children,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ChildrenTableOrderingComposer(
+            $db: $db,
+            $table: $db.children,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$CheckupRecordsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $CheckupRecordsTable> {
+  $$CheckupRecordsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get date =>
+      $composableBuilder(column: $table.date, builder: (column) => column);
+
+  GeneratedColumn<String> get clinicName => $composableBuilder(
+    column: $table.clinicName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get memo =>
+      $composableBuilder(column: $table.memo, builder: (column) => column);
+
+  $$ChildrenTableAnnotationComposer get childId {
+    final $$ChildrenTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.childId,
+      referencedTable: $db.children,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ChildrenTableAnnotationComposer(
+            $db: $db,
+            $table: $db.children,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$CheckupRecordsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $CheckupRecordsTable,
+          CheckupRecordRow,
+          $$CheckupRecordsTableFilterComposer,
+          $$CheckupRecordsTableOrderingComposer,
+          $$CheckupRecordsTableAnnotationComposer,
+          $$CheckupRecordsTableCreateCompanionBuilder,
+          $$CheckupRecordsTableUpdateCompanionBuilder,
+          (CheckupRecordRow, $$CheckupRecordsTableReferences),
+          CheckupRecordRow,
+          PrefetchHooks Function({bool childId})
+        > {
+  $$CheckupRecordsTableTableManager(
+    _$AppDatabase db,
+    $CheckupRecordsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$CheckupRecordsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$CheckupRecordsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$CheckupRecordsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> childId = const Value.absent(),
+                Value<DateTime> date = const Value.absent(),
+                Value<String?> clinicName = const Value.absent(),
+                Value<String?> memo = const Value.absent(),
+              }) => CheckupRecordsCompanion(
+                id: id,
+                childId: childId,
+                date: date,
+                clinicName: clinicName,
+                memo: memo,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int childId,
+                required DateTime date,
+                Value<String?> clinicName = const Value.absent(),
+                Value<String?> memo = const Value.absent(),
+              }) => CheckupRecordsCompanion.insert(
+                id: id,
+                childId: childId,
+                date: date,
+                clinicName: clinicName,
+                memo: memo,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$CheckupRecordsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({childId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (childId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.childId,
+                                referencedTable: $$CheckupRecordsTableReferences
+                                    ._childIdTable(db),
+                                referencedColumn:
+                                    $$CheckupRecordsTableReferences
+                                        ._childIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$CheckupRecordsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $CheckupRecordsTable,
+      CheckupRecordRow,
+      $$CheckupRecordsTableFilterComposer,
+      $$CheckupRecordsTableOrderingComposer,
+      $$CheckupRecordsTableAnnotationComposer,
+      $$CheckupRecordsTableCreateCompanionBuilder,
+      $$CheckupRecordsTableUpdateCompanionBuilder,
+      (CheckupRecordRow, $$CheckupRecordsTableReferences),
+      CheckupRecordRow,
+      PrefetchHooks Function({bool childId})
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -1659,4 +2437,6 @@ class $AppDatabaseManager {
       $$ChildrenTableTableManager(_db, _db.children);
   $$PreventiveTasksTableTableManager get preventiveTasks =>
       $$PreventiveTasksTableTableManager(_db, _db.preventiveTasks);
+  $$CheckupRecordsTableTableManager get checkupRecords =>
+      $$CheckupRecordsTableTableManager(_db, _db.checkupRecords);
 }

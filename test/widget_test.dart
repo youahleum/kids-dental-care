@@ -12,8 +12,9 @@ Widget _app(List<Child> children) {
   return ProviderScope(
     overrides: [
       childrenProvider.overrideWith((ref) => Stream.value(children)),
-      // IndexedStack이 타임라인을 미리 빌드하므로 DB 접근을 차단한다.
+      // IndexedStack이 타임라인/검진 화면을 미리 빌드하므로 DB 접근을 차단한다.
       timelineProvider.overrideWith((ref, childId) => Stream.value(const [])),
+      checkupsProvider.overrideWith((ref, childId) => Stream.value(const [])),
     ],
     child: const KidsDentalApp(),
   );
