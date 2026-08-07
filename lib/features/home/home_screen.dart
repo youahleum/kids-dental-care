@@ -6,6 +6,8 @@ import '../../data/providers.dart';
 import '../../domain/models/child.dart';
 import '../../shared/child_avatar.dart';
 import '../children/child_edit_screen.dart';
+import '../children/selected_child.dart';
+import 'tab_index.dart';
 
 /// 홈 · 자녀 선택. 기준: DESIGN.md 6-1
 class HomeScreen extends ConsumerWidget {
@@ -64,7 +66,11 @@ class HomeScreen extends ConsumerWidget {
               final c = children[i];
               return _ChildCard(
                 child: c,
-                onTap: () => _openEdit(context, existing: c),
+                onTap: () {
+                  ref.read(selectedChildIdProvider.notifier).state = c.id;
+                  ref.read(tabIndexProvider.notifier).state = 1; // 타임라인
+                },
+                onEdit: () => _openEdit(context, existing: c),
                 onDelete: () => _confirmDelete(context, ref, c),
               );
             },
@@ -79,11 +85,13 @@ class _ChildCard extends StatelessWidget {
   const _ChildCard({
     required this.child,
     required this.onTap,
+    required this.onEdit,
     required this.onDelete,
   });
 
   final Child child;
   final VoidCallback onTap;
+  final VoidCallback onEdit;
   final VoidCallback onDelete;
 
   @override
@@ -118,7 +126,7 @@ class _ChildCard extends StatelessWidget {
               ),
               PopupMenuButton<String>(
                 onSelected: (v) {
-                  if (v == 'edit') onTap();
+                  if (v == 'edit') onEdit();
                   if (v == 'delete') onDelete();
                 },
                 itemBuilder: (_) => const [

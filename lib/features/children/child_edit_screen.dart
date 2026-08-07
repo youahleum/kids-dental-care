@@ -6,6 +6,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/utils/age_utils.dart';
 import '../../data/providers.dart';
 import '../../domain/models/child.dart';
+import '../../domain/services/schedule_engine.dart';
 
 /// 자녀 등록/편집 화면. 기준: DESIGN.md 6-2
 class ChildEditScreen extends ConsumerStatefulWidget {
@@ -69,11 +70,16 @@ class _ChildEditScreenState extends ConsumerState<ChildEditScreen> {
         colorValue: _colorValue,
       ));
     } else {
-      await repo.add(
+      final childId = await repo.add(
         name: name,
         birthDate: _birthDate!,
         colorValue: _colorValue,
       );
+      // 생일 기준 예방치료·검진 타임라인 자동 생성 (PLAN.md 7장)
+      final tasks = ScheduleEngine.generate(_birthDate!);
+      await ref
+          .read(preventiveTaskRepositoryProvider)
+          .createForChild(childId, tasks);
     }
     if (mounted) Navigator.of(context).pop();
   }

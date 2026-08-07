@@ -1,20 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../checkups/checkups_screen.dart';
 import '../timeline/timeline_screen.dart';
 import '../tooth_chart/tooth_chart_screen.dart';
 import 'home_screen.dart';
+import 'tab_index.dart';
 
 /// 하단 4탭 셸. 기준: DESIGN.md 5장 (내비게이션 구조)
-class HomeShell extends StatefulWidget {
+class HomeShell extends ConsumerWidget {
   const HomeShell({super.key});
-
-  @override
-  State<HomeShell> createState() => _HomeShellState();
-}
-
-class _HomeShellState extends State<HomeShell> {
-  int _index = 0;
 
   static const _tabs = <Widget>[
     HomeScreen(),
@@ -24,12 +19,14 @@ class _HomeShellState extends State<HomeShell> {
   ];
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final index = ref.watch(tabIndexProvider);
     return Scaffold(
-      body: IndexedStack(index: _index, children: _tabs),
+      body: IndexedStack(index: index, children: _tabs),
       bottomNavigationBar: NavigationBar(
-        selectedIndex: _index,
-        onDestinationSelected: (i) => setState(() => _index = i),
+        selectedIndex: index,
+        onDestinationSelected: (i) =>
+            ref.read(tabIndexProvider.notifier).state = i,
         destinations: const [
           NavigationDestination(
             icon: Icon(Icons.home_outlined),

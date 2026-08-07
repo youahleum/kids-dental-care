@@ -408,15 +408,543 @@ class ChildrenCompanion extends UpdateCompanion<ChildrenData> {
   }
 }
 
+class $PreventiveTasksTable extends PreventiveTasks
+    with TableInfo<$PreventiveTasksTable, PreventiveTaskRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $PreventiveTasksTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _childIdMeta = const VerificationMeta(
+    'childId',
+  );
+  @override
+  late final GeneratedColumn<int> childId = GeneratedColumn<int>(
+    'child_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES children (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _typeMeta = const VerificationMeta('type');
+  @override
+  late final GeneratedColumn<int> type = GeneratedColumn<int>(
+    'type',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+    'title',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _recommendedDateMeta = const VerificationMeta(
+    'recommendedDate',
+  );
+  @override
+  late final GeneratedColumn<DateTime> recommendedDate =
+      GeneratedColumn<DateTime>(
+        'recommended_date',
+        aliasedName,
+        false,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<int> status = GeneratedColumn<int>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _completedDateMeta = const VerificationMeta(
+    'completedDate',
+  );
+  @override
+  late final GeneratedColumn<DateTime> completedDate =
+      GeneratedColumn<DateTime>(
+        'completed_date',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _noteMeta = const VerificationMeta('note');
+  @override
+  late final GeneratedColumn<String> note = GeneratedColumn<String>(
+    'note',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    childId,
+    type,
+    title,
+    recommendedDate,
+    status,
+    completedDate,
+    note,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'preventive_tasks';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<PreventiveTaskRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('child_id')) {
+      context.handle(
+        _childIdMeta,
+        childId.isAcceptableOrUnknown(data['child_id']!, _childIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_childIdMeta);
+    }
+    if (data.containsKey('type')) {
+      context.handle(
+        _typeMeta,
+        type.isAcceptableOrUnknown(data['type']!, _typeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_typeMeta);
+    }
+    if (data.containsKey('title')) {
+      context.handle(
+        _titleMeta,
+        title.isAcceptableOrUnknown(data['title']!, _titleMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_titleMeta);
+    }
+    if (data.containsKey('recommended_date')) {
+      context.handle(
+        _recommendedDateMeta,
+        recommendedDate.isAcceptableOrUnknown(
+          data['recommended_date']!,
+          _recommendedDateMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_recommendedDateMeta);
+    }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_statusMeta);
+    }
+    if (data.containsKey('completed_date')) {
+      context.handle(
+        _completedDateMeta,
+        completedDate.isAcceptableOrUnknown(
+          data['completed_date']!,
+          _completedDateMeta,
+        ),
+      );
+    }
+    if (data.containsKey('note')) {
+      context.handle(
+        _noteMeta,
+        note.isAcceptableOrUnknown(data['note']!, _noteMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  PreventiveTaskRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return PreventiveTaskRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      childId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}child_id'],
+      )!,
+      type: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}type'],
+      )!,
+      title: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}title'],
+      )!,
+      recommendedDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}recommended_date'],
+      )!,
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}status'],
+      )!,
+      completedDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}completed_date'],
+      ),
+      note: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}note'],
+      ),
+    );
+  }
+
+  @override
+  $PreventiveTasksTable createAlias(String alias) {
+    return $PreventiveTasksTable(attachedDatabase, alias);
+  }
+}
+
+class PreventiveTaskRow extends DataClass
+    implements Insertable<PreventiveTaskRow> {
+  final int id;
+  final int childId;
+  final int type;
+  final String title;
+  final DateTime recommendedDate;
+  final int status;
+  final DateTime? completedDate;
+  final String? note;
+  const PreventiveTaskRow({
+    required this.id,
+    required this.childId,
+    required this.type,
+    required this.title,
+    required this.recommendedDate,
+    required this.status,
+    this.completedDate,
+    this.note,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['child_id'] = Variable<int>(childId);
+    map['type'] = Variable<int>(type);
+    map['title'] = Variable<String>(title);
+    map['recommended_date'] = Variable<DateTime>(recommendedDate);
+    map['status'] = Variable<int>(status);
+    if (!nullToAbsent || completedDate != null) {
+      map['completed_date'] = Variable<DateTime>(completedDate);
+    }
+    if (!nullToAbsent || note != null) {
+      map['note'] = Variable<String>(note);
+    }
+    return map;
+  }
+
+  PreventiveTasksCompanion toCompanion(bool nullToAbsent) {
+    return PreventiveTasksCompanion(
+      id: Value(id),
+      childId: Value(childId),
+      type: Value(type),
+      title: Value(title),
+      recommendedDate: Value(recommendedDate),
+      status: Value(status),
+      completedDate: completedDate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(completedDate),
+      note: note == null && nullToAbsent ? const Value.absent() : Value(note),
+    );
+  }
+
+  factory PreventiveTaskRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return PreventiveTaskRow(
+      id: serializer.fromJson<int>(json['id']),
+      childId: serializer.fromJson<int>(json['childId']),
+      type: serializer.fromJson<int>(json['type']),
+      title: serializer.fromJson<String>(json['title']),
+      recommendedDate: serializer.fromJson<DateTime>(json['recommendedDate']),
+      status: serializer.fromJson<int>(json['status']),
+      completedDate: serializer.fromJson<DateTime?>(json['completedDate']),
+      note: serializer.fromJson<String?>(json['note']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'childId': serializer.toJson<int>(childId),
+      'type': serializer.toJson<int>(type),
+      'title': serializer.toJson<String>(title),
+      'recommendedDate': serializer.toJson<DateTime>(recommendedDate),
+      'status': serializer.toJson<int>(status),
+      'completedDate': serializer.toJson<DateTime?>(completedDate),
+      'note': serializer.toJson<String?>(note),
+    };
+  }
+
+  PreventiveTaskRow copyWith({
+    int? id,
+    int? childId,
+    int? type,
+    String? title,
+    DateTime? recommendedDate,
+    int? status,
+    Value<DateTime?> completedDate = const Value.absent(),
+    Value<String?> note = const Value.absent(),
+  }) => PreventiveTaskRow(
+    id: id ?? this.id,
+    childId: childId ?? this.childId,
+    type: type ?? this.type,
+    title: title ?? this.title,
+    recommendedDate: recommendedDate ?? this.recommendedDate,
+    status: status ?? this.status,
+    completedDate: completedDate.present
+        ? completedDate.value
+        : this.completedDate,
+    note: note.present ? note.value : this.note,
+  );
+  PreventiveTaskRow copyWithCompanion(PreventiveTasksCompanion data) {
+    return PreventiveTaskRow(
+      id: data.id.present ? data.id.value : this.id,
+      childId: data.childId.present ? data.childId.value : this.childId,
+      type: data.type.present ? data.type.value : this.type,
+      title: data.title.present ? data.title.value : this.title,
+      recommendedDate: data.recommendedDate.present
+          ? data.recommendedDate.value
+          : this.recommendedDate,
+      status: data.status.present ? data.status.value : this.status,
+      completedDate: data.completedDate.present
+          ? data.completedDate.value
+          : this.completedDate,
+      note: data.note.present ? data.note.value : this.note,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PreventiveTaskRow(')
+          ..write('id: $id, ')
+          ..write('childId: $childId, ')
+          ..write('type: $type, ')
+          ..write('title: $title, ')
+          ..write('recommendedDate: $recommendedDate, ')
+          ..write('status: $status, ')
+          ..write('completedDate: $completedDate, ')
+          ..write('note: $note')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    childId,
+    type,
+    title,
+    recommendedDate,
+    status,
+    completedDate,
+    note,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is PreventiveTaskRow &&
+          other.id == this.id &&
+          other.childId == this.childId &&
+          other.type == this.type &&
+          other.title == this.title &&
+          other.recommendedDate == this.recommendedDate &&
+          other.status == this.status &&
+          other.completedDate == this.completedDate &&
+          other.note == this.note);
+}
+
+class PreventiveTasksCompanion extends UpdateCompanion<PreventiveTaskRow> {
+  final Value<int> id;
+  final Value<int> childId;
+  final Value<int> type;
+  final Value<String> title;
+  final Value<DateTime> recommendedDate;
+  final Value<int> status;
+  final Value<DateTime?> completedDate;
+  final Value<String?> note;
+  const PreventiveTasksCompanion({
+    this.id = const Value.absent(),
+    this.childId = const Value.absent(),
+    this.type = const Value.absent(),
+    this.title = const Value.absent(),
+    this.recommendedDate = const Value.absent(),
+    this.status = const Value.absent(),
+    this.completedDate = const Value.absent(),
+    this.note = const Value.absent(),
+  });
+  PreventiveTasksCompanion.insert({
+    this.id = const Value.absent(),
+    required int childId,
+    required int type,
+    required String title,
+    required DateTime recommendedDate,
+    required int status,
+    this.completedDate = const Value.absent(),
+    this.note = const Value.absent(),
+  }) : childId = Value(childId),
+       type = Value(type),
+       title = Value(title),
+       recommendedDate = Value(recommendedDate),
+       status = Value(status);
+  static Insertable<PreventiveTaskRow> custom({
+    Expression<int>? id,
+    Expression<int>? childId,
+    Expression<int>? type,
+    Expression<String>? title,
+    Expression<DateTime>? recommendedDate,
+    Expression<int>? status,
+    Expression<DateTime>? completedDate,
+    Expression<String>? note,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (childId != null) 'child_id': childId,
+      if (type != null) 'type': type,
+      if (title != null) 'title': title,
+      if (recommendedDate != null) 'recommended_date': recommendedDate,
+      if (status != null) 'status': status,
+      if (completedDate != null) 'completed_date': completedDate,
+      if (note != null) 'note': note,
+    });
+  }
+
+  PreventiveTasksCompanion copyWith({
+    Value<int>? id,
+    Value<int>? childId,
+    Value<int>? type,
+    Value<String>? title,
+    Value<DateTime>? recommendedDate,
+    Value<int>? status,
+    Value<DateTime?>? completedDate,
+    Value<String?>? note,
+  }) {
+    return PreventiveTasksCompanion(
+      id: id ?? this.id,
+      childId: childId ?? this.childId,
+      type: type ?? this.type,
+      title: title ?? this.title,
+      recommendedDate: recommendedDate ?? this.recommendedDate,
+      status: status ?? this.status,
+      completedDate: completedDate ?? this.completedDate,
+      note: note ?? this.note,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (childId.present) {
+      map['child_id'] = Variable<int>(childId.value);
+    }
+    if (type.present) {
+      map['type'] = Variable<int>(type.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (recommendedDate.present) {
+      map['recommended_date'] = Variable<DateTime>(recommendedDate.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<int>(status.value);
+    }
+    if (completedDate.present) {
+      map['completed_date'] = Variable<DateTime>(completedDate.value);
+    }
+    if (note.present) {
+      map['note'] = Variable<String>(note.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PreventiveTasksCompanion(')
+          ..write('id: $id, ')
+          ..write('childId: $childId, ')
+          ..write('type: $type, ')
+          ..write('title: $title, ')
+          ..write('recommendedDate: $recommendedDate, ')
+          ..write('status: $status, ')
+          ..write('completedDate: $completedDate, ')
+          ..write('note: $note')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
   late final $ChildrenTable children = $ChildrenTable(this);
+  late final $PreventiveTasksTable preventiveTasks = $PreventiveTasksTable(
+    this,
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [children];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [
+    children,
+    preventiveTasks,
+  ];
+  @override
+  StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'children',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('preventive_tasks', kind: UpdateKind.delete)],
+    ),
+  ]);
 }
 
 typedef $$ChildrenTableCreateCompanionBuilder =
@@ -437,6 +965,31 @@ typedef $$ChildrenTableUpdateCompanionBuilder =
       Value<String?> photoPath,
       Value<DateTime> createdAt,
     });
+
+final class $$ChildrenTableReferences
+    extends BaseReferences<_$AppDatabase, $ChildrenTable, ChildrenData> {
+  $$ChildrenTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static MultiTypedResultKey<$PreventiveTasksTable, List<PreventiveTaskRow>>
+  _preventiveTasksRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.preventiveTasks,
+    aliasName: 'children__id__preventive_tasks__child_id',
+  );
+
+  $$PreventiveTasksTableProcessedTableManager get preventiveTasksRefs {
+    final manager = $$PreventiveTasksTableTableManager(
+      $_db,
+      $_db.preventiveTasks,
+    ).filter((f) => f.childId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _preventiveTasksRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
 
 class $$ChildrenTableFilterComposer
     extends Composer<_$AppDatabase, $ChildrenTable> {
@@ -476,6 +1029,31 @@ class $$ChildrenTableFilterComposer
     column: $table.createdAt,
     builder: (column) => ColumnFilters(column),
   );
+
+  Expression<bool> preventiveTasksRefs(
+    Expression<bool> Function($$PreventiveTasksTableFilterComposer f) f,
+  ) {
+    final $$PreventiveTasksTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.preventiveTasks,
+      getReferencedColumn: (t) => t.childId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PreventiveTasksTableFilterComposer(
+            $db: $db,
+            $table: $db.preventiveTasks,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$ChildrenTableOrderingComposer
@@ -546,6 +1124,31 @@ class $$ChildrenTableAnnotationComposer
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  Expression<T> preventiveTasksRefs<T extends Object>(
+    Expression<T> Function($$PreventiveTasksTableAnnotationComposer a) f,
+  ) {
+    final $$PreventiveTasksTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.preventiveTasks,
+      getReferencedColumn: (t) => t.childId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PreventiveTasksTableAnnotationComposer(
+            $db: $db,
+            $table: $db.preventiveTasks,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$ChildrenTableTableManager
@@ -559,12 +1162,9 @@ class $$ChildrenTableTableManager
           $$ChildrenTableAnnotationComposer,
           $$ChildrenTableCreateCompanionBuilder,
           $$ChildrenTableUpdateCompanionBuilder,
-          (
-            ChildrenData,
-            BaseReferences<_$AppDatabase, $ChildrenTable, ChildrenData>,
-          ),
+          (ChildrenData, $$ChildrenTableReferences),
           ChildrenData,
-          PrefetchHooks Function()
+          PrefetchHooks Function({bool preventiveTasksRefs})
         > {
   $$ChildrenTableTableManager(_$AppDatabase db, $ChildrenTable table)
     : super(
@@ -610,9 +1210,44 @@ class $$ChildrenTableTableManager
                 createdAt: createdAt,
               ),
           withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$ChildrenTableReferences(db, table, e),
+                ),
+              )
               .toList(),
-          prefetchHooksCallback: null,
+          prefetchHooksCallback: ({preventiveTasksRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [
+                if (preventiveTasksRefs) db.preventiveTasks,
+              ],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (preventiveTasksRefs)
+                    await $_getPrefetchedData<
+                      ChildrenData,
+                      $ChildrenTable,
+                      PreventiveTaskRow
+                    >(
+                      currentTable: table,
+                      referencedTable: $$ChildrenTableReferences
+                          ._preventiveTasksRefsTable(db),
+                      managerFromTypedResult: (p0) => $$ChildrenTableReferences(
+                        db,
+                        table,
+                        p0,
+                      ).preventiveTasksRefs,
+                      referencedItemsForCurrentItem: (item, referencedItems) =>
+                          referencedItems.where((e) => e.childId == item.id),
+                      typedResults: items,
+                    ),
+                ];
+              },
+            );
+          },
         ),
       );
 }
@@ -627,12 +1262,394 @@ typedef $$ChildrenTableProcessedTableManager =
       $$ChildrenTableAnnotationComposer,
       $$ChildrenTableCreateCompanionBuilder,
       $$ChildrenTableUpdateCompanionBuilder,
-      (
-        ChildrenData,
-        BaseReferences<_$AppDatabase, $ChildrenTable, ChildrenData>,
-      ),
+      (ChildrenData, $$ChildrenTableReferences),
       ChildrenData,
-      PrefetchHooks Function()
+      PrefetchHooks Function({bool preventiveTasksRefs})
+    >;
+typedef $$PreventiveTasksTableCreateCompanionBuilder =
+    PreventiveTasksCompanion Function({
+      Value<int> id,
+      required int childId,
+      required int type,
+      required String title,
+      required DateTime recommendedDate,
+      required int status,
+      Value<DateTime?> completedDate,
+      Value<String?> note,
+    });
+typedef $$PreventiveTasksTableUpdateCompanionBuilder =
+    PreventiveTasksCompanion Function({
+      Value<int> id,
+      Value<int> childId,
+      Value<int> type,
+      Value<String> title,
+      Value<DateTime> recommendedDate,
+      Value<int> status,
+      Value<DateTime?> completedDate,
+      Value<String?> note,
+    });
+
+final class $$PreventiveTasksTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $PreventiveTasksTable,
+          PreventiveTaskRow
+        > {
+  $$PreventiveTasksTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $ChildrenTable _childIdTable(_$AppDatabase db) =>
+      db.children.createAlias('preventive_tasks__child_id__children__id');
+
+  $$ChildrenTableProcessedTableManager get childId {
+    final $_column = $_itemColumn<int>('child_id')!;
+
+    final manager = $$ChildrenTableTableManager(
+      $_db,
+      $_db.children,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_childIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$PreventiveTasksTableFilterComposer
+    extends Composer<_$AppDatabase, $PreventiveTasksTable> {
+  $$PreventiveTasksTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get type => $composableBuilder(
+    column: $table.type,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get recommendedDate => $composableBuilder(
+    column: $table.recommendedDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get completedDate => $composableBuilder(
+    column: $table.completedDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get note => $composableBuilder(
+    column: $table.note,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$ChildrenTableFilterComposer get childId {
+    final $$ChildrenTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.childId,
+      referencedTable: $db.children,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ChildrenTableFilterComposer(
+            $db: $db,
+            $table: $db.children,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$PreventiveTasksTableOrderingComposer
+    extends Composer<_$AppDatabase, $PreventiveTasksTable> {
+  $$PreventiveTasksTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get type => $composableBuilder(
+    column: $table.type,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get recommendedDate => $composableBuilder(
+    column: $table.recommendedDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get completedDate => $composableBuilder(
+    column: $table.completedDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get note => $composableBuilder(
+    column: $table.note,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$ChildrenTableOrderingComposer get childId {
+    final $$ChildrenTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.childId,
+      referencedTable: $db.children,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ChildrenTableOrderingComposer(
+            $db: $db,
+            $table: $db.children,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$PreventiveTasksTableAnnotationComposer
+    extends Composer<_$AppDatabase, $PreventiveTasksTable> {
+  $$PreventiveTasksTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get type =>
+      $composableBuilder(column: $table.type, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get recommendedDate => $composableBuilder(
+    column: $table.recommendedDate,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get completedDate => $composableBuilder(
+    column: $table.completedDate,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get note =>
+      $composableBuilder(column: $table.note, builder: (column) => column);
+
+  $$ChildrenTableAnnotationComposer get childId {
+    final $$ChildrenTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.childId,
+      referencedTable: $db.children,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ChildrenTableAnnotationComposer(
+            $db: $db,
+            $table: $db.children,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$PreventiveTasksTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $PreventiveTasksTable,
+          PreventiveTaskRow,
+          $$PreventiveTasksTableFilterComposer,
+          $$PreventiveTasksTableOrderingComposer,
+          $$PreventiveTasksTableAnnotationComposer,
+          $$PreventiveTasksTableCreateCompanionBuilder,
+          $$PreventiveTasksTableUpdateCompanionBuilder,
+          (PreventiveTaskRow, $$PreventiveTasksTableReferences),
+          PreventiveTaskRow,
+          PrefetchHooks Function({bool childId})
+        > {
+  $$PreventiveTasksTableTableManager(
+    _$AppDatabase db,
+    $PreventiveTasksTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$PreventiveTasksTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$PreventiveTasksTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$PreventiveTasksTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> childId = const Value.absent(),
+                Value<int> type = const Value.absent(),
+                Value<String> title = const Value.absent(),
+                Value<DateTime> recommendedDate = const Value.absent(),
+                Value<int> status = const Value.absent(),
+                Value<DateTime?> completedDate = const Value.absent(),
+                Value<String?> note = const Value.absent(),
+              }) => PreventiveTasksCompanion(
+                id: id,
+                childId: childId,
+                type: type,
+                title: title,
+                recommendedDate: recommendedDate,
+                status: status,
+                completedDate: completedDate,
+                note: note,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int childId,
+                required int type,
+                required String title,
+                required DateTime recommendedDate,
+                required int status,
+                Value<DateTime?> completedDate = const Value.absent(),
+                Value<String?> note = const Value.absent(),
+              }) => PreventiveTasksCompanion.insert(
+                id: id,
+                childId: childId,
+                type: type,
+                title: title,
+                recommendedDate: recommendedDate,
+                status: status,
+                completedDate: completedDate,
+                note: note,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$PreventiveTasksTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({childId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (childId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.childId,
+                                referencedTable:
+                                    $$PreventiveTasksTableReferences
+                                        ._childIdTable(db),
+                                referencedColumn:
+                                    $$PreventiveTasksTableReferences
+                                        ._childIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$PreventiveTasksTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $PreventiveTasksTable,
+      PreventiveTaskRow,
+      $$PreventiveTasksTableFilterComposer,
+      $$PreventiveTasksTableOrderingComposer,
+      $$PreventiveTasksTableAnnotationComposer,
+      $$PreventiveTasksTableCreateCompanionBuilder,
+      $$PreventiveTasksTableUpdateCompanionBuilder,
+      (PreventiveTaskRow, $$PreventiveTasksTableReferences),
+      PreventiveTaskRow,
+      PrefetchHooks Function({bool childId})
     >;
 
 class $AppDatabaseManager {
@@ -640,4 +1657,6 @@ class $AppDatabaseManager {
   $AppDatabaseManager(this._db);
   $$ChildrenTableTableManager get children =>
       $$ChildrenTableTableManager(_db, _db.children);
+  $$PreventiveTasksTableTableManager get preventiveTasks =>
+      $$PreventiveTasksTableTableManager(_db, _db.preventiveTasks);
 }
