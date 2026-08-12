@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 part 'app_database.g.dart';
 
@@ -66,7 +67,17 @@ class AppDatabase extends _$AppDatabase {
       );
 
   static QueryExecutor _openConnection() {
-    // drift_flutter: 플랫폼별 로컬 sqlite 파일에 저장
-    return driftDatabase(name: 'kids_dental_care');
+    // drift_flutter: 플랫폼별 로컬 sqlite에 저장.
+    // 웹은 sqlite3.wasm + drift_worker.js(web/ 폴더)가 필요하다.
+    // 네이티브(iOS/Android)는 web 옵션이 무시된다.
+    return driftDatabase(
+      name: 'kids_dental_care',
+      web: kIsWeb
+          ? DriftWebOptions(
+              sqlite3Wasm: Uri.parse('sqlite3.wasm'),
+              driftWorker: Uri.parse('drift_worker.js'),
+            )
+          : null,
+    );
   }
 }
