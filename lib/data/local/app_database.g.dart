@@ -1268,6 +1268,408 @@ class CheckupRecordsCompanion extends UpdateCompanion<CheckupRecordRow> {
   }
 }
 
+class $ToothRecordsTable extends ToothRecords
+    with TableInfo<$ToothRecordsTable, ToothRecordRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ToothRecordsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _childIdMeta = const VerificationMeta(
+    'childId',
+  );
+  @override
+  late final GeneratedColumn<int> childId = GeneratedColumn<int>(
+    'child_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES children (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _toothCodeMeta = const VerificationMeta(
+    'toothCode',
+  );
+  @override
+  late final GeneratedColumn<int> toothCode = GeneratedColumn<int>(
+    'tooth_code',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<int> status = GeneratedColumn<int>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _noteMeta = const VerificationMeta('note');
+  @override
+  late final GeneratedColumn<String> note = GeneratedColumn<String>(
+    'note',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    childId,
+    toothCode,
+    status,
+    note,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'tooth_records';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ToothRecordRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('child_id')) {
+      context.handle(
+        _childIdMeta,
+        childId.isAcceptableOrUnknown(data['child_id']!, _childIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_childIdMeta);
+    }
+    if (data.containsKey('tooth_code')) {
+      context.handle(
+        _toothCodeMeta,
+        toothCode.isAcceptableOrUnknown(data['tooth_code']!, _toothCodeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_toothCodeMeta);
+    }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_statusMeta);
+    }
+    if (data.containsKey('note')) {
+      context.handle(
+        _noteMeta,
+        note.isAcceptableOrUnknown(data['note']!, _noteMeta),
+      );
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {childId, toothCode},
+  ];
+  @override
+  ToothRecordRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ToothRecordRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      childId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}child_id'],
+      )!,
+      toothCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}tooth_code'],
+      )!,
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}status'],
+      )!,
+      note: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}note'],
+      ),
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $ToothRecordsTable createAlias(String alias) {
+    return $ToothRecordsTable(attachedDatabase, alias);
+  }
+}
+
+class ToothRecordRow extends DataClass implements Insertable<ToothRecordRow> {
+  final int id;
+  final int childId;
+  final int toothCode;
+  final int status;
+  final String? note;
+  final DateTime updatedAt;
+  const ToothRecordRow({
+    required this.id,
+    required this.childId,
+    required this.toothCode,
+    required this.status,
+    this.note,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['child_id'] = Variable<int>(childId);
+    map['tooth_code'] = Variable<int>(toothCode);
+    map['status'] = Variable<int>(status);
+    if (!nullToAbsent || note != null) {
+      map['note'] = Variable<String>(note);
+    }
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  ToothRecordsCompanion toCompanion(bool nullToAbsent) {
+    return ToothRecordsCompanion(
+      id: Value(id),
+      childId: Value(childId),
+      toothCode: Value(toothCode),
+      status: Value(status),
+      note: note == null && nullToAbsent ? const Value.absent() : Value(note),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory ToothRecordRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ToothRecordRow(
+      id: serializer.fromJson<int>(json['id']),
+      childId: serializer.fromJson<int>(json['childId']),
+      toothCode: serializer.fromJson<int>(json['toothCode']),
+      status: serializer.fromJson<int>(json['status']),
+      note: serializer.fromJson<String?>(json['note']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'childId': serializer.toJson<int>(childId),
+      'toothCode': serializer.toJson<int>(toothCode),
+      'status': serializer.toJson<int>(status),
+      'note': serializer.toJson<String?>(note),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  ToothRecordRow copyWith({
+    int? id,
+    int? childId,
+    int? toothCode,
+    int? status,
+    Value<String?> note = const Value.absent(),
+    DateTime? updatedAt,
+  }) => ToothRecordRow(
+    id: id ?? this.id,
+    childId: childId ?? this.childId,
+    toothCode: toothCode ?? this.toothCode,
+    status: status ?? this.status,
+    note: note.present ? note.value : this.note,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  ToothRecordRow copyWithCompanion(ToothRecordsCompanion data) {
+    return ToothRecordRow(
+      id: data.id.present ? data.id.value : this.id,
+      childId: data.childId.present ? data.childId.value : this.childId,
+      toothCode: data.toothCode.present ? data.toothCode.value : this.toothCode,
+      status: data.status.present ? data.status.value : this.status,
+      note: data.note.present ? data.note.value : this.note,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ToothRecordRow(')
+          ..write('id: $id, ')
+          ..write('childId: $childId, ')
+          ..write('toothCode: $toothCode, ')
+          ..write('status: $status, ')
+          ..write('note: $note, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, childId, toothCode, status, note, updatedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ToothRecordRow &&
+          other.id == this.id &&
+          other.childId == this.childId &&
+          other.toothCode == this.toothCode &&
+          other.status == this.status &&
+          other.note == this.note &&
+          other.updatedAt == this.updatedAt);
+}
+
+class ToothRecordsCompanion extends UpdateCompanion<ToothRecordRow> {
+  final Value<int> id;
+  final Value<int> childId;
+  final Value<int> toothCode;
+  final Value<int> status;
+  final Value<String?> note;
+  final Value<DateTime> updatedAt;
+  const ToothRecordsCompanion({
+    this.id = const Value.absent(),
+    this.childId = const Value.absent(),
+    this.toothCode = const Value.absent(),
+    this.status = const Value.absent(),
+    this.note = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+  });
+  ToothRecordsCompanion.insert({
+    this.id = const Value.absent(),
+    required int childId,
+    required int toothCode,
+    required int status,
+    this.note = const Value.absent(),
+    required DateTime updatedAt,
+  }) : childId = Value(childId),
+       toothCode = Value(toothCode),
+       status = Value(status),
+       updatedAt = Value(updatedAt);
+  static Insertable<ToothRecordRow> custom({
+    Expression<int>? id,
+    Expression<int>? childId,
+    Expression<int>? toothCode,
+    Expression<int>? status,
+    Expression<String>? note,
+    Expression<DateTime>? updatedAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (childId != null) 'child_id': childId,
+      if (toothCode != null) 'tooth_code': toothCode,
+      if (status != null) 'status': status,
+      if (note != null) 'note': note,
+      if (updatedAt != null) 'updated_at': updatedAt,
+    });
+  }
+
+  ToothRecordsCompanion copyWith({
+    Value<int>? id,
+    Value<int>? childId,
+    Value<int>? toothCode,
+    Value<int>? status,
+    Value<String?>? note,
+    Value<DateTime>? updatedAt,
+  }) {
+    return ToothRecordsCompanion(
+      id: id ?? this.id,
+      childId: childId ?? this.childId,
+      toothCode: toothCode ?? this.toothCode,
+      status: status ?? this.status,
+      note: note ?? this.note,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (childId.present) {
+      map['child_id'] = Variable<int>(childId.value);
+    }
+    if (toothCode.present) {
+      map['tooth_code'] = Variable<int>(toothCode.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<int>(status.value);
+    }
+    if (note.present) {
+      map['note'] = Variable<String>(note.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ToothRecordsCompanion(')
+          ..write('id: $id, ')
+          ..write('childId: $childId, ')
+          ..write('toothCode: $toothCode, ')
+          ..write('status: $status, ')
+          ..write('note: $note, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -1276,6 +1678,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     this,
   );
   late final $CheckupRecordsTable checkupRecords = $CheckupRecordsTable(this);
+  late final $ToothRecordsTable toothRecords = $ToothRecordsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -1284,6 +1687,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     children,
     preventiveTasks,
     checkupRecords,
+    toothRecords,
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
@@ -1300,6 +1704,13 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         limitUpdateKind: UpdateKind.delete,
       ),
       result: [TableUpdate('checkup_records', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'children',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('tooth_records', kind: UpdateKind.delete)],
     ),
   ]);
 }
@@ -1360,6 +1771,24 @@ final class $$ChildrenTableReferences
     ).filter((f) => f.childId.id.sqlEquals($_itemColumn<int>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_checkupRecordsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$ToothRecordsTable, List<ToothRecordRow>>
+  _toothRecordsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.toothRecords,
+    aliasName: 'children__id__tooth_records__child_id',
+  );
+
+  $$ToothRecordsTableProcessedTableManager get toothRecordsRefs {
+    final manager = $$ToothRecordsTableTableManager(
+      $_db,
+      $_db.toothRecords,
+    ).filter((f) => f.childId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_toothRecordsRefsTable($_db));
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -1446,6 +1875,31 @@ class $$ChildrenTableFilterComposer
           }) => $$CheckupRecordsTableFilterComposer(
             $db: $db,
             $table: $db.checkupRecords,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> toothRecordsRefs(
+    Expression<bool> Function($$ToothRecordsTableFilterComposer f) f,
+  ) {
+    final $$ToothRecordsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.toothRecords,
+      getReferencedColumn: (t) => t.childId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ToothRecordsTableFilterComposer(
+            $db: $db,
+            $table: $db.toothRecords,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -1574,6 +2028,31 @@ class $$ChildrenTableAnnotationComposer
     );
     return f(composer);
   }
+
+  Expression<T> toothRecordsRefs<T extends Object>(
+    Expression<T> Function($$ToothRecordsTableAnnotationComposer a) f,
+  ) {
+    final $$ToothRecordsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.toothRecords,
+      getReferencedColumn: (t) => t.childId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ToothRecordsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.toothRecords,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$ChildrenTableTableManager
@@ -1592,6 +2071,7 @@ class $$ChildrenTableTableManager
           PrefetchHooks Function({
             bool preventiveTasksRefs,
             bool checkupRecordsRefs,
+            bool toothRecordsRefs,
           })
         > {
   $$ChildrenTableTableManager(_$AppDatabase db, $ChildrenTable table)
@@ -1646,12 +2126,17 @@ class $$ChildrenTableTableManager
               )
               .toList(),
           prefetchHooksCallback:
-              ({preventiveTasksRefs = false, checkupRecordsRefs = false}) {
+              ({
+                preventiveTasksRefs = false,
+                checkupRecordsRefs = false,
+                toothRecordsRefs = false,
+              }) {
                 return PrefetchHooks(
                   db: db,
                   explicitlyWatchedTables: [
                     if (preventiveTasksRefs) db.preventiveTasks,
                     if (checkupRecordsRefs) db.checkupRecords,
+                    if (toothRecordsRefs) db.toothRecords,
                   ],
                   addJoins: null,
                   getPrefetchedDataCallback: (items) async {
@@ -1698,6 +2183,27 @@ class $$ChildrenTableTableManager
                               ),
                           typedResults: items,
                         ),
+                      if (toothRecordsRefs)
+                        await $_getPrefetchedData<
+                          ChildrenData,
+                          $ChildrenTable,
+                          ToothRecordRow
+                        >(
+                          currentTable: table,
+                          referencedTable: $$ChildrenTableReferences
+                              ._toothRecordsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$ChildrenTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).toothRecordsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.childId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
                     ];
                   },
                 );
@@ -1721,6 +2227,7 @@ typedef $$ChildrenTableProcessedTableManager =
       PrefetchHooks Function({
         bool preventiveTasksRefs,
         bool checkupRecordsRefs,
+        bool toothRecordsRefs,
       })
     >;
 typedef $$PreventiveTasksTableCreateCompanionBuilder =
@@ -2429,6 +2936,336 @@ typedef $$CheckupRecordsTableProcessedTableManager =
       CheckupRecordRow,
       PrefetchHooks Function({bool childId})
     >;
+typedef $$ToothRecordsTableCreateCompanionBuilder =
+    ToothRecordsCompanion Function({
+      Value<int> id,
+      required int childId,
+      required int toothCode,
+      required int status,
+      Value<String?> note,
+      required DateTime updatedAt,
+    });
+typedef $$ToothRecordsTableUpdateCompanionBuilder =
+    ToothRecordsCompanion Function({
+      Value<int> id,
+      Value<int> childId,
+      Value<int> toothCode,
+      Value<int> status,
+      Value<String?> note,
+      Value<DateTime> updatedAt,
+    });
+
+final class $$ToothRecordsTableReferences
+    extends BaseReferences<_$AppDatabase, $ToothRecordsTable, ToothRecordRow> {
+  $$ToothRecordsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $ChildrenTable _childIdTable(_$AppDatabase db) =>
+      db.children.createAlias('tooth_records__child_id__children__id');
+
+  $$ChildrenTableProcessedTableManager get childId {
+    final $_column = $_itemColumn<int>('child_id')!;
+
+    final manager = $$ChildrenTableTableManager(
+      $_db,
+      $_db.children,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_childIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$ToothRecordsTableFilterComposer
+    extends Composer<_$AppDatabase, $ToothRecordsTable> {
+  $$ToothRecordsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get toothCode => $composableBuilder(
+    column: $table.toothCode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get note => $composableBuilder(
+    column: $table.note,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$ChildrenTableFilterComposer get childId {
+    final $$ChildrenTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.childId,
+      referencedTable: $db.children,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ChildrenTableFilterComposer(
+            $db: $db,
+            $table: $db.children,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$ToothRecordsTableOrderingComposer
+    extends Composer<_$AppDatabase, $ToothRecordsTable> {
+  $$ToothRecordsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get toothCode => $composableBuilder(
+    column: $table.toothCode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get note => $composableBuilder(
+    column: $table.note,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$ChildrenTableOrderingComposer get childId {
+    final $$ChildrenTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.childId,
+      referencedTable: $db.children,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ChildrenTableOrderingComposer(
+            $db: $db,
+            $table: $db.children,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$ToothRecordsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ToothRecordsTable> {
+  $$ToothRecordsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get toothCode =>
+      $composableBuilder(column: $table.toothCode, builder: (column) => column);
+
+  GeneratedColumn<int> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<String> get note =>
+      $composableBuilder(column: $table.note, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  $$ChildrenTableAnnotationComposer get childId {
+    final $$ChildrenTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.childId,
+      referencedTable: $db.children,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ChildrenTableAnnotationComposer(
+            $db: $db,
+            $table: $db.children,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$ToothRecordsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ToothRecordsTable,
+          ToothRecordRow,
+          $$ToothRecordsTableFilterComposer,
+          $$ToothRecordsTableOrderingComposer,
+          $$ToothRecordsTableAnnotationComposer,
+          $$ToothRecordsTableCreateCompanionBuilder,
+          $$ToothRecordsTableUpdateCompanionBuilder,
+          (ToothRecordRow, $$ToothRecordsTableReferences),
+          ToothRecordRow,
+          PrefetchHooks Function({bool childId})
+        > {
+  $$ToothRecordsTableTableManager(_$AppDatabase db, $ToothRecordsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ToothRecordsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ToothRecordsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ToothRecordsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> childId = const Value.absent(),
+                Value<int> toothCode = const Value.absent(),
+                Value<int> status = const Value.absent(),
+                Value<String?> note = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+              }) => ToothRecordsCompanion(
+                id: id,
+                childId: childId,
+                toothCode: toothCode,
+                status: status,
+                note: note,
+                updatedAt: updatedAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int childId,
+                required int toothCode,
+                required int status,
+                Value<String?> note = const Value.absent(),
+                required DateTime updatedAt,
+              }) => ToothRecordsCompanion.insert(
+                id: id,
+                childId: childId,
+                toothCode: toothCode,
+                status: status,
+                note: note,
+                updatedAt: updatedAt,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$ToothRecordsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({childId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (childId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.childId,
+                                referencedTable: $$ToothRecordsTableReferences
+                                    ._childIdTable(db),
+                                referencedColumn: $$ToothRecordsTableReferences
+                                    ._childIdTable(db)
+                                    .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$ToothRecordsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ToothRecordsTable,
+      ToothRecordRow,
+      $$ToothRecordsTableFilterComposer,
+      $$ToothRecordsTableOrderingComposer,
+      $$ToothRecordsTableAnnotationComposer,
+      $$ToothRecordsTableCreateCompanionBuilder,
+      $$ToothRecordsTableUpdateCompanionBuilder,
+      (ToothRecordRow, $$ToothRecordsTableReferences),
+      ToothRecordRow,
+      PrefetchHooks Function({bool childId})
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -2439,4 +3276,6 @@ class $AppDatabaseManager {
       $$PreventiveTasksTableTableManager(_db, _db.preventiveTasks);
   $$CheckupRecordsTableTableManager get checkupRecords =>
       $$CheckupRecordsTableTableManager(_db, _db.checkupRecords);
+  $$ToothRecordsTableTableManager get toothRecords =>
+      $$ToothRecordsTableTableManager(_db, _db.toothRecords);
 }

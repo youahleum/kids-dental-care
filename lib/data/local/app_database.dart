@@ -42,13 +42,31 @@ class CheckupRecords extends Table {
   TextColumn get memo => text().nullable()();
 }
 
-@DriftDatabase(tables: [Children, PreventiveTasks, CheckupRecords])
+/// 치아별 상태 기록 테이블. 기준 문서: PLAN.md 6장
+/// (childId, toothCode) 당 1개 — unique 제약.
+@DataClassName('ToothRecordRow')
+class ToothRecords extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get childId =>
+      integer().references(Children, #id, onDelete: KeyAction.cascade)();
+  IntColumn get toothCode => integer()();
+  IntColumn get status => integer()();
+  TextColumn get note => text().nullable()();
+  DateTimeColumn get updatedAt => dateTime()();
+
+  @override
+  List<Set<Column>> get uniqueKeys => [
+        {childId, toothCode},
+      ];
+}
+
+@DriftDatabase(tables: [Children, PreventiveTasks, CheckupRecords, ToothRecords])
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor])
       : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -59,6 +77,9 @@ class AppDatabase extends _$AppDatabase {
           }
           if (from < 3) {
             await m.createTable(checkupRecords);
+          }
+          if (from < 4) {
+            await m.createTable(toothRecords);
           }
         },
         beforeOpen: (details) async {

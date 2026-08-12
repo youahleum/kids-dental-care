@@ -3,13 +3,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../domain/models/checkup_record.dart';
 import '../domain/models/child.dart';
 import '../domain/models/preventive_task.dart';
+import '../domain/models/tooth_record.dart';
 import '../domain/repositories/checkup_repository.dart';
 import '../domain/repositories/child_repository.dart';
 import '../domain/repositories/preventive_task_repository.dart';
+import '../domain/repositories/tooth_repository.dart';
 import 'local/app_database.dart';
 import 'repositories_impl/checkup_repository_impl.dart';
 import 'repositories_impl/child_repository_impl.dart';
 import 'repositories_impl/preventive_task_repository_impl.dart';
+import 'repositories_impl/tooth_repository_impl.dart';
 
 /// 앱 전역 데이터 provider. 기준: PLAN.md 5장 (계층 분리)
 
@@ -47,4 +50,14 @@ final checkupRepositoryProvider = Provider<CheckupRepository>((ref) {
 final checkupsProvider =
     StreamProvider.family<List<CheckupRecord>, int>((ref, childId) {
   return ref.watch(checkupRepositoryProvider).watchByChild(childId);
+});
+
+final toothRepositoryProvider = Provider<ToothRepository>((ref) {
+  return ToothRepositoryImpl(ref.watch(appDatabaseProvider));
+});
+
+/// 특정 자녀의 치아 상태(toothCode→기록) 실시간 스트림.
+final toothChartProvider =
+    StreamProvider.family<Map<int, ToothRecord>, int>((ref, childId) {
+  return ref.watch(toothRepositoryProvider).watchByChild(childId);
 });
