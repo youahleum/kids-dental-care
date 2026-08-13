@@ -8,7 +8,9 @@ import '../domain/repositories/checkup_repository.dart';
 import '../domain/repositories/child_repository.dart';
 import '../domain/repositories/preventive_task_repository.dart';
 import '../domain/repositories/tooth_repository.dart';
+import '../domain/services/notification_service.dart';
 import 'local/app_database.dart';
+import 'notifications/notification_service_factory.dart';
 import 'repositories_impl/checkup_repository_impl.dart';
 import 'repositories_impl/child_repository_impl.dart';
 import 'repositories_impl/preventive_task_repository_impl.dart';
@@ -61,3 +63,11 @@ final toothChartProvider =
     StreamProvider.family<Map<int, ToothRecord>, int>((ref, childId) {
   return ref.watch(toothRepositoryProvider).watchByChild(childId);
 });
+
+/// 로컬 알림 서비스 (웹/테스트는 no-op).
+final notificationServiceProvider = Provider<NotificationService>((ref) {
+  return createNotificationService();
+});
+
+/// 알림 on/off 설정. (M6: in-memory 기본 on. 영속화는 M7)
+final notificationsEnabledProvider = StateProvider<bool>((ref) => true);

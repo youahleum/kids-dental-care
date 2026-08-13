@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../data/providers.dart';
 import '../checkups/checkups_screen.dart';
+import '../notifications/notification_controller.dart';
 import '../timeline/timeline_screen.dart';
 import '../tooth_chart/tooth_chart_screen.dart';
 import 'home_screen.dart';
@@ -20,6 +22,11 @@ class HomeShell extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // 자녀/타임라인이 바뀌면 로컬 알림을 재예약한다 (웹/테스트는 no-op).
+    ref.listen(childrenProvider, (_, next) {
+      if (next.hasValue) rescheduleAllNotifications(ref);
+    });
+
     final index = ref.watch(tabIndexProvider);
     return Scaffold(
       body: IndexedStack(index: index, children: _tabs),

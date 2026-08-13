@@ -7,6 +7,7 @@ import '../../domain/models/child.dart';
 import '../../shared/child_avatar.dart';
 import '../children/child_edit_screen.dart';
 import '../children/selected_child.dart';
+import '../settings/settings_screen.dart';
 import 'tab_index.dart';
 
 /// 홈 · 자녀 선택. 기준: DESIGN.md 6-1
@@ -48,7 +49,17 @@ class HomeScreen extends ConsumerWidget {
     final childrenAsync = ref.watch(childrenProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('우리 아이 치아')),
+      appBar: AppBar(
+        title: const Text('우리 아이 치아'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const SettingsScreen()),
+            ),
+          ),
+        ],
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _openEdit(context),
         child: const Icon(Icons.add),

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:kids_dental_care/app.dart';
+import 'package:kids_dental_care/data/notifications/noop_notification_service.dart';
 import 'package:kids_dental_care/data/providers.dart';
 import 'package:kids_dental_care/domain/models/child.dart';
 import 'package:kids_dental_care/domain/models/tooth_record.dart';
@@ -18,6 +19,9 @@ Widget _app(List<Child> children) {
       checkupsProvider.overrideWith((ref, childId) => Stream.value(const [])),
       toothChartProvider
           .overrideWith((ref, childId) => Stream.value(const <int, ToothRecord>{})),
+      // 알림 재예약이 진짜 DB/플랫폼을 태우지 않도록 차단한다.
+      notificationServiceProvider.overrideWithValue(NoopNotificationService()),
+      notificationsEnabledProvider.overrideWith((ref) => false),
     ],
     child: const KidsDentalApp(),
   );
