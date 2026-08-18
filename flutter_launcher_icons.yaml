@@ -1,0 +1,12 @@
+flutter_launcher_icons:
+  image_path: "assets/icon/app_icon.png"
+  android: true
+  ios: true
+  remove_alpha_ios: true
+  web:
+    generate: true
+    background_color: "#F7FBFC"
+    theme_color: "#4DB6C4"
+  # 안드로이드 적응형 아이콘 (배경 민트 + 흰 치아 전경)
+  adaptive_icon_background: "#4DB6C4"
+  adaptive_icon_foreground: "assets/icon/adaptive_fg.png"
