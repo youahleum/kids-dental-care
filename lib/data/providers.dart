@@ -68,6 +68,3 @@ final toothChartProvider =
 final notificationServiceProvider = Provider<NotificationService>((ref) {
   return createNotificationService();
 });
-
-/// 알림 on/off 설정. (M6: in-memory 기본 on. 영속화는 M7)
-final notificationsEnabledProvider = StateProvider<bool>((ref) => true);

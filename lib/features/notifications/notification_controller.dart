@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/providers.dart';
 import '../../domain/services/notification_scheduler.dart';
+import '../settings/settings_controller.dart';
 
 /// 모든 자녀의 미완료 항목을 모아 로컬 알림을 재예약한다.
 /// 앱 시작 시 + 설정/데이터 변경 시 호출한다.
@@ -9,9 +10,9 @@ import '../../domain/services/notification_scheduler.dart';
 /// id 충돌 방지: 자녀별로 알림 id 공간을 분리(childId * 1000 오프셋).
 Future<void> rescheduleAllNotifications(WidgetRef ref) async {
   final service = ref.read(notificationServiceProvider);
-  final enabled = ref.read(notificationsEnabledProvider);
+  final settings = ref.read(settingsProvider);
 
-  if (!enabled) {
+  if (!settings.notificationsEnabled) {
     await service.cancelAll();
     return;
   }
@@ -24,7 +25,11 @@ Future<void> rescheduleAllNotifications(WidgetRef ref) async {
   final all = <ScheduledNotification>[];
   for (final child in children) {
     final tasks = await taskRepo.watchByChild(child.id).first;
-    final scheduled = NotificationScheduler.forTasks(tasks, child.name);
+    final scheduled = NotificationScheduler.forTasks(
+      tasks,
+      child.name,
+      hour: settings.notificationHour,
+    );
     // 자녀별 id 공간 분리
     for (final n in scheduled) {
       all.add(ScheduledNotification(

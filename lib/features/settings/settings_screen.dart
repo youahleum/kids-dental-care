@@ -3,14 +3,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/providers.dart';
 import '../notifications/notification_controller.dart';
+import 'settings_controller.dart';
 
-/// 설정 화면. 기준: DESIGN.md 6-6 (M6은 알림 on/off. 시각·주기·백업은 M7)
+/// 설정 화면. 기준: DESIGN.md 6-6
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final enabled = ref.watch(notificationsEnabledProvider);
+    final settings = ref.watch(settingsProvider);
+    final notifier = ref.read(settingsProvider.notifier);
 
     return Scaffold(
       appBar: AppBar(title: const Text('설정')),
@@ -19,9 +21,9 @@ class SettingsScreen extends ConsumerWidget {
           SwitchListTile(
             title: const Text('예방치료·검진 알림'),
             subtitle: const Text('시기가 되면 7일 전과 당일에 알려드려요.'),
-            value: enabled,
+            value: settings.notificationsEnabled,
             onChanged: (v) async {
-              ref.read(notificationsEnabledProvider.notifier).state = v;
+              await notifier.setNotificationsEnabled(v);
               if (v) {
                 final granted = await ref
                     .read(notificationServiceProvider)
@@ -36,6 +38,44 @@ class SettingsScreen extends ConsumerWidget {
               }
               await rescheduleAllNotifications(ref);
             },
+          ),
+          ListTile(
+            enabled: settings.notificationsEnabled,
+            leading: const Icon(Icons.schedule),
+            title: const Text('알림 시각'),
+            trailing: Text(
+              '${settings.notificationHour.toString().padLeft(2, '0')}:00',
+              style: const TextStyle(fontSize: 16),
+            ),
+            onTap: settings.notificationsEnabled
+                ? () async {
+                    final picked = await showTimePicker(
+                      context: context,
+                      initialTime:
+                          TimeOfDay(hour: settings.notificationHour, minute: 0),
+                      helpText: '알림 시각 선택',
+                    );
+                    if (picked != null) {
+                      await notifier.setNotificationHour(picked.hour);
+                      await rescheduleAllNotifications(ref);
+                    }
+                  }
+                : null,
+          ),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.event_repeat),
+            title: const Text('검진 주기'),
+            subtitle: const Text('다음 검진 예정일 계산 기준'),
+            trailing: DropdownButton<int>(
+              value: settings.checkupIntervalMonths,
+              items: const [3, 4, 6, 12]
+                  .map((m) => DropdownMenuItem(value: m, child: Text('$m개월')))
+                  .toList(),
+              onChanged: (m) {
+                if (m != null) notifier.setCheckupIntervalMonths(m);
+              },
+            ),
           ),
           const Divider(),
           const ListTile(

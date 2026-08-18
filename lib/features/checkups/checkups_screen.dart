@@ -8,6 +8,7 @@ import '../../domain/models/checkup_record.dart';
 import '../../domain/services/checkup_scheduler.dart';
 import '../../shared/child_switcher.dart';
 import '../children/selected_child.dart';
+import '../settings/settings_controller.dart';
 import 'checkup_add_screen.dart';
 
 /// 검진 기록 · 이력. 기준: DESIGN.md 6-4
@@ -61,7 +62,10 @@ class _CheckupList extends ConsumerWidget {
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (e, _) => Center(child: Text('오류가 발생했습니다.\n$e')),
       data: (records) {
-        final nextDate = CheckupScheduler.nextDate(records);
+        final interval = ref.watch(
+            settingsProvider.select((s) => s.checkupIntervalMonths));
+        final nextDate =
+            CheckupScheduler.nextDate(records, intervalMonths: interval);
         return ListView(
           padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
           children: [

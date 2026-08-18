@@ -5,15 +5,21 @@ import 'app.dart';
 import 'data/local/app_database.dart';
 import 'data/providers.dart';
 import 'data/seed/dev_seed.dart';
+import 'data/settings/settings_repository.dart';
+import 'features/settings/settings_controller.dart';
 
 /// 개발용 샘플 데이터 시드 플래그. `flutter run --dart-define=SEED=true`
 const _seed = bool.fromEnvironment('SEED');
 
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   final overrides = <Override>[];
 
+  // 저장된 앱 설정을 로드해 초기값으로 주입.
+  final settings = await SettingsRepository().load();
+  overrides.add(initialSettingsProvider.overrideWithValue(settings));
+
   if (_seed) {
-    WidgetsFlutterBinding.ensureInitialized();
     final db = AppDatabase();
     try {
       await runDevSeed(db);

@@ -5,8 +5,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:kids_dental_care/app.dart';
 import 'package:kids_dental_care/data/notifications/noop_notification_service.dart';
 import 'package:kids_dental_care/data/providers.dart';
+import 'package:kids_dental_care/domain/models/app_settings.dart';
 import 'package:kids_dental_care/domain/models/child.dart';
 import 'package:kids_dental_care/domain/models/tooth_record.dart';
+import 'package:kids_dental_care/features/settings/settings_controller.dart';
 
 /// children/timeline provider를 직접 오버라이드하면 Drift/DB 계층을 태우지 않으므로
 /// 위젯 렌더만 순수하게 검증할 수 있다. (영속성은 repository 테스트에서 검증)
@@ -21,7 +23,8 @@ Widget _app(List<Child> children) {
           .overrideWith((ref, childId) => Stream.value(const <int, ToothRecord>{})),
       // 알림 재예약이 진짜 DB/플랫폼을 태우지 않도록 차단한다.
       notificationServiceProvider.overrideWithValue(NoopNotificationService()),
-      notificationsEnabledProvider.overrideWith((ref) => false),
+      initialSettingsProvider
+          .overrideWithValue(const AppSettings(notificationsEnabled: false)),
     ],
     child: const KidsDentalApp(),
   );
