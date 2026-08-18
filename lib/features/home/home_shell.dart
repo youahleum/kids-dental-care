@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/providers.dart';
+import '../chat/chat_screen.dart';
 import '../checkups/checkups_screen.dart';
 import '../notifications/notification_controller.dart';
 import '../timeline/timeline_screen.dart';
@@ -17,6 +18,7 @@ class HomeShell extends ConsumerWidget {
     HomeScreen(),
     TimelineScreen(),
     CheckupsScreen(),
+    ChatScreen(),
     ToothChartScreen(),
   ];
 
@@ -49,6 +51,11 @@ class HomeShell extends ConsumerWidget {
             icon: Icon(Icons.event_available_outlined),
             selectedIcon: Icon(Icons.event_available),
             label: '검진기록',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.chat_bubble_outline),
+            selectedIcon: Icon(Icons.chat_bubble),
+            label: 'AI상담',
           ),
           NavigationDestination(
             icon: Icon(Icons.medical_services_outlined),

@@ -28,13 +28,14 @@ Widget _app(List<Child> children) {
 }
 
 void main() {
-  testWidgets('자녀가 없으면 빈 상태 + 4탭', (WidgetTester tester) async {
+  testWidgets('자녀가 없으면 빈 상태 + 5탭', (WidgetTester tester) async {
     await tester.pumpWidget(_app(const []));
     await tester.pump();
 
     expect(find.byType(NavigationBar), findsOneWidget);
     expect(find.text('타임라인'), findsOneWidget);
     expect(find.text('검진기록'), findsOneWidget);
+    expect(find.text('AI상담'), findsOneWidget);
     expect(find.text('치아차트'), findsOneWidget);
     expect(find.text('첫 아이를 등록해 주세요'), findsOneWidget);
   });
