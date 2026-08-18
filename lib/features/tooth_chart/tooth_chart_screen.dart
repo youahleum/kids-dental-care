@@ -5,7 +5,9 @@ import '../../data/providers.dart';
 import '../../domain/models/tooth_layout.dart';
 import '../../domain/models/tooth_record.dart';
 import '../../shared/child_switcher.dart';
+import '../../shared/status_views.dart';
 import '../children/selected_child.dart';
+import '../home/tab_index.dart';
 import 'tooth_status_style.dart';
 
 /// 치아별 상태 기록. 기준: DESIGN.md 6-5
@@ -26,9 +28,8 @@ class _ToothChartScreenState extends ConsumerState<ToothChartScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('치아 차트')),
       body: child == null
-          ? Center(
-              child: Text('먼저 홈에서 자녀를 등록해 주세요.',
-                  style: TextStyle(color: Theme.of(context).hintColor)),
+          ? NoChildView(
+              onGoHome: () => ref.read(tabIndexProvider.notifier).state = 0,
             )
           : Column(
               children: [
@@ -82,7 +83,7 @@ class _Chart extends ConsumerWidget {
 
     return async.when(
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => Center(child: Text('오류가 발생했습니다.\n$e')),
+      error: (e, _) => ErrorView(error: e),
       data: (records) {
         return ListView(
           padding: const EdgeInsets.all(16),

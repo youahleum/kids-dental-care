@@ -6,7 +6,9 @@ import '../../core/theme/app_colors.dart';
 import '../../data/providers.dart';
 import '../../domain/models/preventive_task.dart';
 import '../../shared/child_switcher.dart';
+import '../../shared/status_views.dart';
 import '../children/selected_child.dart';
+import '../home/tab_index.dart';
 import 'task_status_view.dart';
 
 enum _Filter { all, pending, done }
@@ -29,7 +31,10 @@ class _TimelineScreenState extends ConsumerState<TimelineScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('타임라인')),
       body: child == null
-          ? const _NoChild()
+          ? NoChildView(
+              onGoHome: () =>
+                  ref.read(tabIndexProvider.notifier).state = 0,
+            )
           : Column(
               children: [
                 const ChildSwitcher(),
@@ -55,7 +60,7 @@ class _TimelineList extends ConsumerWidget {
     final async = ref.watch(timelineProvider(childId));
     return async.when(
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => Center(child: Text('오류가 발생했습니다.\n$e')),
+      error: (e, _) => ErrorView(error: e),
       data: (all) {
         final tasks = switch (filter) {
           _Filter.all => all,
@@ -218,16 +223,3 @@ class _DisclaimerBanner extends StatelessWidget {
   }
 }
 
-class _NoChild extends StatelessWidget {
-  const _NoChild();
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text(
-        '먼저 홈에서 자녀를 등록해 주세요.',
-        style: TextStyle(color: Theme.of(context).hintColor),
-      ),
-    );
-  }
-}

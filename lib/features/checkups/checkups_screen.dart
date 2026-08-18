@@ -7,7 +7,9 @@ import '../../data/providers.dart';
 import '../../domain/models/checkup_record.dart';
 import '../../domain/services/checkup_scheduler.dart';
 import '../../shared/child_switcher.dart';
+import '../../shared/status_views.dart';
 import '../children/selected_child.dart';
+import '../home/tab_index.dart';
 import '../settings/settings_controller.dart';
 import 'checkup_add_screen.dart';
 
@@ -32,7 +34,9 @@ class CheckupsScreen extends ConsumerWidget {
               child: const Icon(Icons.add),
             ),
       body: child == null
-          ? _noChild(context)
+          ? NoChildView(
+              onGoHome: () => ref.read(tabIndexProvider.notifier).state = 0,
+            )
           : Column(
               children: [
                 const ChildSwitcher(),
@@ -41,13 +45,6 @@ class CheckupsScreen extends ConsumerWidget {
             ),
     );
   }
-
-  Widget _noChild(BuildContext context) => Center(
-        child: Text(
-          '먼저 홈에서 자녀를 등록해 주세요.',
-          style: TextStyle(color: Theme.of(context).hintColor),
-        ),
-      );
 }
 
 class _CheckupList extends ConsumerWidget {
@@ -60,7 +57,7 @@ class _CheckupList extends ConsumerWidget {
     final async = ref.watch(checkupsProvider(childId));
     return async.when(
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => Center(child: Text('오류가 발생했습니다.\n$e')),
+      error: (e, _) => ErrorView(error: e),
       data: (records) {
         final interval = ref.watch(
             settingsProvider.select((s) => s.checkupIntervalMonths));

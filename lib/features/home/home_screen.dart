@@ -5,6 +5,7 @@ import '../../core/utils/age_utils.dart';
 import '../../data/providers.dart';
 import '../../domain/models/child.dart';
 import '../../shared/child_avatar.dart';
+import '../../shared/status_views.dart';
 import '../children/child_edit_screen.dart';
 import '../children/selected_child.dart';
 import '../settings/settings_screen.dart';
@@ -66,7 +67,10 @@ class HomeScreen extends ConsumerWidget {
       ),
       body: childrenAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('오류가 발생했습니다.\n$e')),
+        error: (e, _) => ErrorView(
+          error: e,
+          onRetry: () => ref.invalidate(childrenProvider),
+        ),
         data: (children) {
           if (children.isEmpty) return const _EmptyState();
           return ListView.separated(
