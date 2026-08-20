@@ -22,19 +22,75 @@ abstract final class ToothLayout {
     31, 32, 33, 34, 35, 36, 37, 38,
   ];
 
-  /// 사람이 읽는 치아 이름 (요약).
+  /// 사람이 읽는 치아 이름 (요약). 예: "왼쪽 위 첫째 큰어금니 (영구치)"
   static String label(int code) {
     final quadrant = code ~/ 10;
-    final position = code % 10;
     final isPrimary = quadrant >= 5;
-    final side = switch (quadrant) {
-      1 || 5 => '우상',
-      2 || 6 => '좌상',
-      3 || 7 => '좌하',
-      4 || 8 => '우하',
+    final kind = isPrimary ? '유치' : '영구치';
+    return '${sideLabel(code)} ${toothTypeName(code)} ($kind)';
+  }
+
+  /// 좌/우·위/아래 위치. 예: "왼쪽 위"
+  /// (아이 기준 좌우 — 화면상 왼쪽이 아이의 오른쪽이지만,
+  ///  일반 사용자에겐 화면 기준이 직관적이라 화면 기준으로 표기)
+  static String sideLabel(int code) {
+    final quadrant = code ~/ 10;
+    return switch (quadrant) {
+      1 || 5 => '오른쪽 위',
+      2 || 6 => '왼쪽 위',
+      3 || 7 => '왼쪽 아래',
+      4 || 8 => '오른쪽 아래',
       _ => '',
     };
-    final kind = isPrimary ? '유치' : '영구치';
-    return '$side $position번 $kind';
+  }
+
+  /// 치아 종류 이름. FDI 끝자리(중앙→바깥 순서) 기준.
+  static String toothTypeName(int code) {
+    final quadrant = code ~/ 10;
+    final pos = code % 10;
+    final isPrimary = quadrant >= 5;
+    if (isPrimary) {
+      // 유치: 1·2 앞니, 3 송곳니, 4·5 어금니
+      return switch (pos) {
+        1 => '가운데 앞니',
+        2 => '옆 앞니',
+        3 => '송곳니',
+        4 => '첫째 어금니',
+        5 => '둘째 어금니',
+        _ => '치아',
+      };
+    }
+    // 영구치: 1·2 앞니, 3 송곳니, 4·5 작은어금니, 6·7·8 큰어금니
+    return switch (pos) {
+      1 => '가운데 앞니',
+      2 => '옆 앞니',
+      3 => '송곳니',
+      4 => '첫째 작은어금니',
+      5 => '둘째 작은어금니',
+      6 => '첫째 큰어금니',
+      7 => '둘째 큰어금니',
+      8 => '사랑니',
+      _ => '치아',
+    };
+  }
+
+  /// 치아 위에 표기할 아주 짧은 라벨(아이콘). 앞니=I, 송곳니=V, 어금니=M.
+  static String shortMark(int code) {
+    final quadrant = code ~/ 10;
+    final pos = code % 10;
+    final isPrimary = quadrant >= 5;
+    if (isPrimary) {
+      return switch (pos) {
+        1 || 2 => '앞',
+        3 => '송',
+        _ => '어',
+      };
+    }
+    return switch (pos) {
+      1 || 2 => '앞',
+      3 => '송',
+      4 || 5 => '작',
+      _ => '어',
+    };
   }
 }

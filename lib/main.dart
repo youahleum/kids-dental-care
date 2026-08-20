@@ -15,9 +15,13 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final overrides = <Override>[];
 
-  // 저장된 앱 설정을 로드해 초기값으로 주입.
-  final settings = await SettingsRepository().load();
-  overrides.add(initialSettingsProvider.overrideWithValue(settings));
+  // 저장된 앱 설정을 로드해 초기값으로 주입. 실패해도 기본값으로 진행.
+  try {
+    final settings = await SettingsRepository().load();
+    overrides.add(initialSettingsProvider.overrideWithValue(settings));
+  } catch (e, st) {
+    debugPrint('settings load failed, using defaults: $e\n$st');
+  }
 
   if (_seed) {
     final db = AppDatabase();

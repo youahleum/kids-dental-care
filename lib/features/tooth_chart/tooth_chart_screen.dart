@@ -93,17 +93,25 @@ class _Chart extends ConsumerWidget {
                 padding: const EdgeInsets.all(12),
                 child: Column(
                   children: [
-                    Text('상악 (위)',
+                    Text('위턱 (상악)',
                         style: TextStyle(
-                            fontSize: 12, color: Theme.of(context).hintColor)),
-                    const SizedBox(height: 8),
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: Theme.of(context).hintColor)),
+                    const SizedBox(height: 6),
+                    const _SideGuide(),
+                    const SizedBox(height: 6),
                     _Arch(codes: upper, records: records, childId: childId),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 20),
                     _Arch(codes: lower, records: records, childId: childId),
-                    const SizedBox(height: 8),
-                    Text('하악 (아래)',
+                    const SizedBox(height: 6),
+                    const _SideGuide(),
+                    const SizedBox(height: 6),
+                    Text('아래턱 (하악)',
                         style: TextStyle(
-                            fontSize: 12, color: Theme.of(context).hintColor)),
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: Theme.of(context).hintColor)),
                   ],
                 ),
               ),
@@ -113,6 +121,27 @@ class _Chart extends ConsumerWidget {
           ],
         );
       },
+    );
+  }
+}
+
+/// 좌/우 방향 가이드 (화면 기준). 가운데는 앞니, 바깥으로 갈수록 어금니.
+class _SideGuide extends StatelessWidget {
+  const _SideGuide();
+
+  @override
+  Widget build(BuildContext context) {
+    final style = TextStyle(
+        fontSize: 11,
+        fontWeight: FontWeight.w600,
+        color: Theme.of(context).colorScheme.primary);
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text('◀ 오른쪽', style: style),
+        Text('가운데', style: TextStyle(fontSize: 10, color: Theme.of(context).hintColor)),
+        Text('왼쪽 ▶', style: style),
+      ],
     );
   }
 }
@@ -130,18 +159,36 @@ class _Arch extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Wrap(
-      alignment: WrapAlignment.center,
-      spacing: 4,
-      runSpacing: 4,
-      children: [
-        for (final code in codes)
-          _Tooth(
-            code: code,
-            status: records[code]?.status ?? ToothStatus.healthy,
-            childId: childId,
+    // 좌/우 절반 사이에 중앙 구분선을 넣어 방향을 명확히 한다.
+    final half = codes.length ~/ 2;
+    Widget tooth(int code) => _Tooth(
+          code: code,
+          status: records[code]?.status ?? ToothStatus.healthy,
+          childId: childId,
+        );
+    // 영구치는 16개라 좁은 화면에서 넘칠 수 있어 가로 스크롤로 감싼다.
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          for (final code in codes.sublist(0, half))
+            Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 2),
+                child: tooth(code)),
+          Container(
+            width: 1,
+            height: 30,
+            margin: const EdgeInsets.symmetric(horizontal: 4),
+            color: Theme.of(context).dividerColor,
           ),
-      ],
+          for (final code in codes.sublist(half))
+            Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 2),
+                child: tooth(code)),
+        ],
+      ),
     );
   }
 }
@@ -161,22 +208,40 @@ class _Tooth extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final style = toothStatusStyle(status);
     final isHealthy = status == ToothStatus.healthy;
+    final pos = code % 10;
+    // 앞니는 좁게, 어금니는 넓게 — 종류가 형태로 구분되게.
+    final isFront = pos <= 2; // 앞니
+    final isMolar = pos >= 4; // 어금니류(작은·큰어금니)
+    final width = isFront ? 18.0 : (isMolar ? 26.0 : 22.0);
+
     return InkWell(
       onTap: () => _openSheet(context, ref),
-      child: Container(
-        width: 22,
-        height: 28,
-        decoration: BoxDecoration(
-          color: style.color,
-          borderRadius: const BorderRadius.vertical(
-            top: Radius.circular(6),
-            bottom: Radius.circular(7),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: width,
+            height: 28,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: style.color,
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(6),
+                bottom: Radius.circular(7),
+              ),
+              border: Border.all(
+                color: isHealthy ? const Color(0xFFCFD8DC) : style.color,
+                width: 1.4,
+              ),
+            ),
           ),
-          border: Border.all(
-            color: isHealthy ? const Color(0xFFCFD8DC) : style.color,
-            width: 1.4,
+          const SizedBox(height: 2),
+          Text(
+            ToothLayout.shortMark(code),
+            style: TextStyle(
+                fontSize: 9, color: Theme.of(context).hintColor),
           ),
-        ),
+        ],
       ),
     );
   }
