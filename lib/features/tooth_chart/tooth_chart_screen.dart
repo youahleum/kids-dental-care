@@ -8,6 +8,7 @@ import '../../shared/child_switcher.dart';
 import '../../shared/status_views.dart';
 import '../children/selected_child.dart';
 import '../home/tab_index.dart';
+import 'tooth_painter.dart';
 import 'tooth_status_style.dart';
 
 /// 치아별 상태 기록. 기준: DESIGN.md 6-5
@@ -208,34 +209,24 @@ class _Tooth extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final style = toothStatusStyle(status);
     final isHealthy = status == ToothStatus.healthy;
-    final pos = code % 10;
-    // 앞니는 좁게, 어금니는 넓게 — 종류가 형태로 구분되게.
-    final isFront = pos <= 2; // 앞니
-    final isMolar = pos >= 4; // 어금니류(작은·큰어금니)
-    final width = isFront ? 18.0 : (isMolar ? 26.0 : 22.0);
+    final kind = ToothLayout.kind(code);
+    // 종류별 폭: 어금니 넓게, 앞니·송곳니 좁게.
+    final width = kind == ToothKind.molar ? 28.0 : 20.0;
 
     return InkWell(
       onTap: () => _openSheet(context, ref),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Container(
-            width: width,
-            height: 28,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: style.color,
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(6),
-                bottom: Radius.circular(7),
-              ),
-              border: Border.all(
-                color: isHealthy ? const Color(0xFFCFD8DC) : style.color,
-                width: 1.4,
-              ),
+          CustomPaint(
+            size: Size(width, 34),
+            painter: ToothPainter(
+              kind: kind,
+              fill: style.color,
+              border: isHealthy ? const Color(0xFFB0BEC5) : style.color,
             ),
           ),
-          const SizedBox(height: 2),
+          const SizedBox(height: 3),
           Text(
             ToothLayout.shortMark(code),
             style: TextStyle(

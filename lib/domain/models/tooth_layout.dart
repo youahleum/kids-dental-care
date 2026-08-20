@@ -74,23 +74,21 @@ abstract final class ToothLayout {
     };
   }
 
-  /// 치아 위에 표기할 아주 짧은 라벨(아이콘). 앞니=I, 송곳니=V, 어금니=M.
-  static String shortMark(int code) {
-    final quadrant = code ~/ 10;
-    final pos = code % 10;
-    final isPrimary = quadrant >= 5;
-    if (isPrimary) {
-      return switch (pos) {
-        1 || 2 => '앞',
-        3 => '송',
-        _ => '어',
+  /// 치아 아래 표기할 짧은 이름. 앞니 / 송곳니 / 어금니.
+  static String shortMark(int code) => switch (kind(code)) {
+        ToothKind.incisor => '앞니',
+        ToothKind.canine => '송곳니',
+        ToothKind.molar => '어금니',
       };
-    }
-    return switch (pos) {
-      1 || 2 => '앞',
-      3 => '송',
-      4 || 5 => '작',
-      _ => '어',
-    };
+
+  /// 형태 분류 (모양 렌더용). 앞니 / 송곳니 / 어금니.
+  static ToothKind kind(int code) {
+    final pos = code % 10;
+    if (pos <= 2) return ToothKind.incisor;
+    if (pos == 3) return ToothKind.canine;
+    return ToothKind.molar;
   }
 }
+
+/// 치아 형태 분류.
+enum ToothKind { incisor, canine, molar }
