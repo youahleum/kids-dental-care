@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/theme/app_colors.dart';
 import '../../core/utils/age_utils.dart';
 import '../../data/providers.dart';
 import '../../domain/models/child.dart';
+import '../../domain/services/dashboard_stats.dart';
 import '../../shared/child_avatar.dart';
 import '../../shared/status_views.dart';
 import '../children/child_edit_screen.dart';
@@ -96,7 +98,7 @@ class HomeScreen extends ConsumerWidget {
   }
 }
 
-class _ChildCard extends StatelessWidget {
+class _ChildCard extends ConsumerWidget {
   const _ChildCard({
     required this.child,
     required this.onTap,
@@ -110,50 +112,123 @@ class _ChildCard extends StatelessWidget {
   final VoidCallback onDelete;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final stats = ref.watch(dashboardStatsProvider(child.id));
     return Card(
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
         onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.all(12),
-          child: Row(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ChildAvatar(child: child),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      child.name,
-                      style: const TextStyle(
-                          fontSize: 15, fontWeight: FontWeight.w600),
+              Row(
+                children: [
+                  ChildAvatar(child: child),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          child.name,
+                          style: const TextStyle(
+                              fontSize: 15, fontWeight: FontWeight.w600),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          AgeUtils.label(child.birthDate),
+                          style: TextStyle(
+                              fontSize: 12,
+                              color: Theme.of(context).hintColor),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 2),
-                    Text(
-                      AgeUtils.label(child.birthDate),
-                      style: TextStyle(
-                          fontSize: 12, color: Theme.of(context).hintColor),
-                    ),
-                  ],
-                ),
-              ),
-              PopupMenuButton<String>(
-                onSelected: (v) {
-                  if (v == 'edit') onEdit();
-                  if (v == 'delete') onDelete();
-                },
-                itemBuilder: (_) => const [
-                  PopupMenuItem(value: 'edit', child: Text('편집')),
-                  PopupMenuItem(value: 'delete', child: Text('삭제')),
+                  ),
+                  PopupMenuButton<String>(
+                    onSelected: (v) {
+                      if (v == 'edit') onEdit();
+                      if (v == 'delete') onDelete();
+                    },
+                    itemBuilder: (_) => const [
+                      PopupMenuItem(value: 'edit', child: Text('편집')),
+                      PopupMenuItem(value: 'delete', child: Text('삭제')),
+                    ],
+                  ),
                 ],
               ),
+              const SizedBox(height: 10),
+              _SummaryRow(stats: stats),
             ],
           ),
         ),
       ),
     );
+  }
+}
+
+/// 자녀 카드 하단 요약: 다음 할 일 + 완료율 + 충치 경고.
+class _SummaryRow extends StatelessWidget {
+  const _SummaryRow({required this.stats});
+
+  final DashboardStats stats;
+
+  @override
+  Widget build(BuildContext context) {
+    final next = stats.nextTask;
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+
+    Widget nextBadge;
+    if (next == null) {
+      nextBadge = _pill('할 일 없음', AppColors.statusNeutral);
+    } else {
+      final d = DateTime(next.recommendedDate.year, next.recommendedDate.month,
+          next.recommendedDate.day);
+      final days = d.difference(today).inDays;
+      final (label, color) = days < 0
+          ? ('지남', AppColors.statusOverdue)
+          : days == 0
+              ? ('오늘', AppColors.statusUpcoming)
+              : ('D-$days', AppColors.statusUpcoming);
+      nextBadge = _pill('${next.title} · $label', color);
+    }
+
+    return Row(
+      children: [
+        Expanded(child: nextBadge),
+        const SizedBox(width: 8),
+        Text('완료 ${stats.completionPercent}%',
+            style: TextStyle(fontSize: 11, color: Theme.of(context).hintColor)),
+        if (stats.cariesCount > 0) ...[
+          const SizedBox(width: 8),
+          _pill('충치 ${stats.cariesCount}', AppColors.toothCaries),
+        ],
+      ],
+    );
+  }
+
+  Widget _pill(String text, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.16),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Text(
+        text,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: TextStyle(
+            fontSize: 11, fontWeight: FontWeight.w600, color: _darken(color)),
+      ),
+    );
+  }
+
+  Color _darken(Color c) {
+    final hsl = HSLColor.fromColor(c);
+    return hsl.withLightness((hsl.lightness - 0.25).clamp(0.0, 1.0)).toColor();
   }
 }
 

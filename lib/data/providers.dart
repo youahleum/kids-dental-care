@@ -8,6 +8,7 @@ import '../domain/repositories/checkup_repository.dart';
 import '../domain/repositories/child_repository.dart';
 import '../domain/repositories/preventive_task_repository.dart';
 import '../domain/repositories/tooth_repository.dart';
+import '../domain/services/dashboard_stats.dart';
 import '../domain/services/notification_service.dart';
 import 'backup/backup_service.dart';
 import 'local/app_database.dart';
@@ -73,4 +74,17 @@ final notificationServiceProvider = Provider<NotificationService>((ref) {
 /// 데이터 백업/복원 서비스.
 final backupServiceProvider = Provider<BackupService>((ref) {
   return BackupService(ref.watch(appDatabaseProvider));
+});
+
+/// 특정 자녀의 대시보드 통계. tasks/checkups/teeth를 조합해 계산.
+final dashboardStatsProvider =
+    Provider.family<DashboardStats, int>((ref, childId) {
+  final tasks = ref.watch(timelineProvider(childId)).valueOrNull ?? const [];
+  final checkups = ref.watch(checkupsProvider(childId)).valueOrNull ?? const [];
+  final teeth = ref.watch(toothChartProvider(childId)).valueOrNull ?? const {};
+  return DashboardStats.compute(
+    tasks: tasks,
+    checkups: checkups,
+    teeth: teeth,
+  );
 });
