@@ -23,9 +23,21 @@ class BackupService {
     final tasks = await _db.select(_db.preventiveTasks).get();
     final checkups = await _db.select(_db.checkupRecords).get();
     final teeth = await _db.select(_db.toothRecords).get();
+    final clinics = await _db.select(_db.clinics).get();
 
     return {
       'formatVersion': formatVersion,
+      'clinics': [
+        for (final c in clinics)
+          {
+            'id': c.id,
+            'name': c.name,
+            'phone': c.phone,
+            'address': c.address,
+            'memo': c.memo,
+            'createdAt': _ms(c.createdAt),
+          },
+      ],
       'children': [
         for (final c in children)
           {
@@ -93,6 +105,7 @@ class BackupService {
       await _db.delete(_db.checkupRecords).go();
       await _db.delete(_db.preventiveTasks).go();
       await _db.delete(_db.children).go();
+      await _db.delete(_db.clinics).go();
 
       final children = (data['children'] as List).cast<Map<String, dynamic>>();
       for (final c in children) {
@@ -103,6 +116,21 @@ class BackupService {
                 birthDate: _dt(c['birthDate'] as int),
                 colorValue: c['colorValue'] as int,
                 photoPath: Value(c['photoPath'] as String?),
+                createdAt: _dt(c['createdAt'] as int),
+              ),
+            );
+      }
+
+      final clinics =
+          (data['clinics'] as List? ?? const []).cast<Map<String, dynamic>>();
+      for (final c in clinics) {
+        await _db.into(_db.clinics).insert(
+              ClinicsCompanion.insert(
+                id: Value(c['id'] as int),
+                name: c['name'] as String,
+                phone: Value(c['phone'] as String?),
+                address: Value(c['address'] as String?),
+                memo: Value(c['memo'] as String?),
                 createdAt: _dt(c['createdAt'] as int),
               ),
             );

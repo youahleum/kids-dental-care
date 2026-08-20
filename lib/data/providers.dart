@@ -2,9 +2,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../domain/models/checkup_record.dart';
 import '../domain/models/child.dart';
+import '../domain/models/clinic.dart';
 import '../domain/models/preventive_task.dart';
 import '../domain/models/tooth_record.dart';
 import '../domain/repositories/checkup_repository.dart';
+import '../domain/repositories/clinic_repository.dart';
 import '../domain/repositories/child_repository.dart';
 import '../domain/repositories/preventive_task_repository.dart';
 import '../domain/repositories/tooth_repository.dart';
@@ -14,6 +16,7 @@ import 'backup/backup_service.dart';
 import 'local/app_database.dart';
 import 'notifications/notification_service_factory.dart';
 import 'repositories_impl/checkup_repository_impl.dart';
+import 'repositories_impl/clinic_repository_impl.dart';
 import 'repositories_impl/child_repository_impl.dart';
 import 'repositories_impl/preventive_task_repository_impl.dart';
 import 'repositories_impl/tooth_repository_impl.dart';
@@ -74,6 +77,15 @@ final notificationServiceProvider = Provider<NotificationService>((ref) {
 /// 데이터 백업/복원 서비스.
 final backupServiceProvider = Provider<BackupService>((ref) {
   return BackupService(ref.watch(appDatabaseProvider));
+});
+
+final clinicRepositoryProvider = Provider<ClinicRepository>((ref) {
+  return ClinicRepositoryImpl(ref.watch(appDatabaseProvider));
+});
+
+/// 단골 치과 목록 실시간 스트림.
+final clinicsProvider = StreamProvider<List<Clinic>>((ref) {
+  return ref.watch(clinicRepositoryProvider).watchAll();
 });
 
 /// 특정 자녀의 대시보드 통계. tasks/checkups/teeth를 조합해 계산.

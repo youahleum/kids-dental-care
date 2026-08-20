@@ -4,6 +4,7 @@ import 'package:kids_dental_care/data/backup/backup_service.dart';
 import 'package:kids_dental_care/data/local/app_database.dart';
 import 'package:kids_dental_care/data/repositories_impl/checkup_repository_impl.dart';
 import 'package:kids_dental_care/data/repositories_impl/child_repository_impl.dart';
+import 'package:kids_dental_care/data/repositories_impl/clinic_repository_impl.dart';
 import 'package:kids_dental_care/data/repositories_impl/preventive_task_repository_impl.dart';
 import 'package:kids_dental_care/data/repositories_impl/tooth_repository_impl.dart';
 import 'package:kids_dental_care/domain/models/tooth_record.dart';
@@ -44,6 +45,10 @@ void main() {
     // 완료 처리된 task도 하나 만들어 상태 보존 확인.
     final firstTask = (await taskRepo.watchByChild(childId).first).first;
     await taskRepo.setDone(firstTask.id, done: true);
+
+    // 단골 치과도 하나
+    final clinicRepo = ClinicRepositoryImpl(db);
+    await clinicRepo.add(name: '해맑은치과', phone: '02-123-4567');
   }
 
   Future<Map<String, int>> counts() async => {
@@ -51,6 +56,7 @@ void main() {
         'tasks': (await db.select(db.preventiveTasks).get()).length,
         'checkups': (await db.select(db.checkupRecords).get()).length,
         'teeth': (await db.select(db.toothRecords).get()).length,
+        'clinics': (await db.select(db.clinics).get()).length,
       };
 
   test('export → import 라운드트립: 데이터가 동일하게 복원된다', () async {
@@ -63,6 +69,7 @@ void main() {
     await db.delete(db.checkupRecords).go();
     await db.delete(db.preventiveTasks).go();
     await db.delete(db.children).go();
+    await db.delete(db.clinics).go();
     expect((await counts())['children'], 0);
 
     await backup.importFromJson(json);

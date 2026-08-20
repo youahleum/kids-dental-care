@@ -60,13 +60,25 @@ class ToothRecords extends Table {
       ];
 }
 
-@DriftDatabase(tables: [Children, PreventiveTasks, CheckupRecords, ToothRecords])
+/// 단골 치과 테이블. 기준 문서: PLAN.md 10장
+@DataClassName('ClinicRow')
+class Clinics extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get name => text().withLength(min: 1, max: 40)();
+  TextColumn get phone => text().nullable()();
+  TextColumn get address => text().nullable()();
+  TextColumn get memo => text().nullable()();
+  DateTimeColumn get createdAt => dateTime()();
+}
+
+@DriftDatabase(
+    tables: [Children, PreventiveTasks, CheckupRecords, ToothRecords, Clinics])
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor])
       : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -80,6 +92,9 @@ class AppDatabase extends _$AppDatabase {
           }
           if (from < 4) {
             await m.createTable(toothRecords);
+          }
+          if (from < 5) {
+            await m.createTable(clinics);
           }
         },
         beforeOpen: (details) async {

@@ -84,13 +84,7 @@ class _CheckupAddScreenState extends ConsumerState<CheckupAddScreen> {
             ),
           ),
           const SizedBox(height: 16),
-          TextField(
-            controller: _clinicController,
-            decoration: const InputDecoration(
-              labelText: '병원명 (선택)',
-              border: OutlineInputBorder(),
-            ),
-          ),
+          _ClinicField(controller: _clinicController),
           const SizedBox(height: 16),
           TextField(
             controller: _memoController,
@@ -110,6 +104,42 @@ class _CheckupAddScreenState extends ConsumerState<CheckupAddScreen> {
           ElevatedButton(onPressed: _save, child: const Text('저장')),
         ],
       ),
+    );
+  }
+}
+
+/// 병원명 입력 — 저장된 단골 치과 이름을 자동완성으로 제안한다.
+class _ClinicField extends ConsumerWidget {
+  const _ClinicField({required this.controller});
+
+  final TextEditingController controller;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final clinics = ref.watch(clinicsProvider).valueOrNull ?? const [];
+    final names = clinics.map((c) => c.name).toList();
+
+    return Autocomplete<String>(
+      initialValue: TextEditingValue(text: controller.text),
+      optionsBuilder: (value) {
+        if (value.text.isEmpty) return names;
+        return names.where(
+            (n) => n.toLowerCase().contains(value.text.toLowerCase()));
+      },
+      onSelected: (v) => controller.text = v,
+      fieldViewBuilder: (context, textController, focusNode, _) {
+        // Autocomplete 내부 컨트롤러 → 외부 컨트롤러 동기화
+        textController.addListener(() => controller.text = textController.text);
+        return TextField(
+          controller: textController,
+          focusNode: focusNode,
+          decoration: const InputDecoration(
+            labelText: '병원명 (선택)',
+            hintText: '저장된 단골 치과에서 선택하거나 입력',
+            border: OutlineInputBorder(),
+          ),
+        );
+      },
     );
   }
 }

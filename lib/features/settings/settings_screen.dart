@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/providers.dart';
+import '../clinics/clinics_screen.dart';
 import '../notifications/notification_controller.dart';
 import 'settings_controller.dart';
 
@@ -75,6 +76,16 @@ class SettingsScreen extends ConsumerWidget {
               onChanged: (m) {
                 if (m != null) notifier.setCheckupIntervalMonths(m);
               },
+            ),
+          ),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.local_hospital_outlined),
+            title: const Text('단골 치과'),
+            subtitle: const Text('자주 가는 치과 정보 관리'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const ClinicsScreen()),
             ),
           ),
           const Divider(),
