@@ -9,6 +9,7 @@ import '../domain/repositories/child_repository.dart';
 import '../domain/repositories/preventive_task_repository.dart';
 import '../domain/repositories/tooth_repository.dart';
 import '../domain/services/notification_service.dart';
+import 'backup/backup_service.dart';
 import 'local/app_database.dart';
 import 'notifications/notification_service_factory.dart';
 import 'repositories_impl/checkup_repository_impl.dart';
@@ -67,4 +68,9 @@ final toothChartProvider =
 /// 로컬 알림 서비스 (웹/테스트는 no-op).
 final notificationServiceProvider = Provider<NotificationService>((ref) {
   return createNotificationService();
+});
+
+/// 데이터 백업/복원 서비스.
+final backupServiceProvider = Provider<BackupService>((ref) {
+  return BackupService(ref.watch(appDatabaseProvider));
 });
