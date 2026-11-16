@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../domain/models/tooth_layout.dart';
 
 /// 치아 종류별 실루엣을 그리는 painter.
-/// 위쪽이 크라운(씹는 면), 아래가 뿌리.
+/// 위쪽이 크라운(씹는 면), 아래가 뿌리. (위턱 치아는 화면에서 상하 반전해 사용)
 class ToothPainter extends CustomPainter {
   ToothPainter({
     required this.kind,

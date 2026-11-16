@@ -102,7 +102,11 @@ class _Chart extends ConsumerWidget {
                     const SizedBox(height: 6),
                     const _SideGuide(),
                     const SizedBox(height: 6),
-                    _Arch(codes: upper, records: records, childId: childId),
+                    _Arch(
+                        codes: upper,
+                        records: records,
+                        childId: childId,
+                        upper: true),
                     const SizedBox(height: 20),
                     _Arch(codes: lower, records: records, childId: childId),
                     const SizedBox(height: 6),
@@ -152,11 +156,13 @@ class _Arch extends StatelessWidget {
     required this.codes,
     required this.records,
     required this.childId,
+    this.upper = false,
   });
 
   final List<int> codes;
   final Map<int, ToothRecord> records;
   final int childId;
+  final bool upper;
 
   @override
   Widget build(BuildContext context) {
@@ -166,13 +172,15 @@ class _Arch extends StatelessWidget {
           code: code,
           status: records[code]?.status ?? ToothStatus.healthy,
           childId: childId,
+          upper: upper,
         );
     // 영구치는 16개라 좁은 화면에서 넘칠 수 있어 가로 스크롤로 감싼다.
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment:
+            upper ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: [
           for (final code in codes.sublist(0, half))
             Padding(
@@ -199,11 +207,15 @@ class _Tooth extends ConsumerWidget {
     required this.code,
     required this.status,
     required this.childId,
+    this.upper = false,
   });
 
   final int code;
   final ToothStatus status;
   final int childId;
+
+  /// 위턱 치아: 실제 입안처럼 뿌리가 위, 크라운이 아래로 매달린 모양.
+  final bool upper;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -213,26 +225,30 @@ class _Tooth extends ConsumerWidget {
     // 종류별 폭: 어금니 넓게, 앞니·송곳니 좁게.
     final width = kind == ToothKind.molar ? 28.0 : 20.0;
 
+    final shape = Transform.flip(
+      flipY: upper,
+      child: CustomPaint(
+        size: Size(width, 34),
+        painter: ToothPainter(
+          kind: kind,
+          fill: style.color,
+          border: isHealthy ? const Color(0xFFB0BEC5) : style.color,
+        ),
+      ),
+    );
+    final label = Text(
+      ToothLayout.shortMark(code),
+      style: TextStyle(fontSize: 9, color: Theme.of(context).hintColor),
+    );
+
+    // 라벨은 바깥쪽(위턱은 위, 아래턱은 아래)에 두어 두 턱의 크라운이 마주보게 한다.
     return InkWell(
       onTap: () => _openSheet(context, ref),
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        children: [
-          CustomPaint(
-            size: Size(width, 34),
-            painter: ToothPainter(
-              kind: kind,
-              fill: style.color,
-              border: isHealthy ? const Color(0xFFB0BEC5) : style.color,
-            ),
-          ),
-          const SizedBox(height: 3),
-          Text(
-            ToothLayout.shortMark(code),
-            style: TextStyle(
-                fontSize: 9, color: Theme.of(context).hintColor),
-          ),
-        ],
+        children: upper
+            ? [label, const SizedBox(height: 3), shape]
+            : [shape, const SizedBox(height: 3), label],
       ),
     );
   }
