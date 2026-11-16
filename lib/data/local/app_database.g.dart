@@ -2067,6 +2067,305 @@ class ClinicsCompanion extends UpdateCompanion<ClinicRow> {
   }
 }
 
+class $BrushingLogsTable extends BrushingLogs
+    with TableInfo<$BrushingLogsTable, BrushingLogRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $BrushingLogsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _childIdMeta = const VerificationMeta(
+    'childId',
+  );
+  @override
+  late final GeneratedColumn<int> childId = GeneratedColumn<int>(
+    'child_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES children (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _dateMeta = const VerificationMeta('date');
+  @override
+  late final GeneratedColumn<DateTime> date = GeneratedColumn<DateTime>(
+    'date',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _slotMeta = const VerificationMeta('slot');
+  @override
+  late final GeneratedColumn<int> slot = GeneratedColumn<int>(
+    'slot',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, childId, date, slot];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'brushing_logs';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<BrushingLogRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('child_id')) {
+      context.handle(
+        _childIdMeta,
+        childId.isAcceptableOrUnknown(data['child_id']!, _childIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_childIdMeta);
+    }
+    if (data.containsKey('date')) {
+      context.handle(
+        _dateMeta,
+        date.isAcceptableOrUnknown(data['date']!, _dateMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_dateMeta);
+    }
+    if (data.containsKey('slot')) {
+      context.handle(
+        _slotMeta,
+        slot.isAcceptableOrUnknown(data['slot']!, _slotMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_slotMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {childId, date, slot},
+  ];
+  @override
+  BrushingLogRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return BrushingLogRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      childId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}child_id'],
+      )!,
+      date: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}date'],
+      )!,
+      slot: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}slot'],
+      )!,
+    );
+  }
+
+  @override
+  $BrushingLogsTable createAlias(String alias) {
+    return $BrushingLogsTable(attachedDatabase, alias);
+  }
+}
+
+class BrushingLogRow extends DataClass implements Insertable<BrushingLogRow> {
+  final int id;
+  final int childId;
+  final DateTime date;
+  final int slot;
+  const BrushingLogRow({
+    required this.id,
+    required this.childId,
+    required this.date,
+    required this.slot,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['child_id'] = Variable<int>(childId);
+    map['date'] = Variable<DateTime>(date);
+    map['slot'] = Variable<int>(slot);
+    return map;
+  }
+
+  BrushingLogsCompanion toCompanion(bool nullToAbsent) {
+    return BrushingLogsCompanion(
+      id: Value(id),
+      childId: Value(childId),
+      date: Value(date),
+      slot: Value(slot),
+    );
+  }
+
+  factory BrushingLogRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return BrushingLogRow(
+      id: serializer.fromJson<int>(json['id']),
+      childId: serializer.fromJson<int>(json['childId']),
+      date: serializer.fromJson<DateTime>(json['date']),
+      slot: serializer.fromJson<int>(json['slot']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'childId': serializer.toJson<int>(childId),
+      'date': serializer.toJson<DateTime>(date),
+      'slot': serializer.toJson<int>(slot),
+    };
+  }
+
+  BrushingLogRow copyWith({int? id, int? childId, DateTime? date, int? slot}) =>
+      BrushingLogRow(
+        id: id ?? this.id,
+        childId: childId ?? this.childId,
+        date: date ?? this.date,
+        slot: slot ?? this.slot,
+      );
+  BrushingLogRow copyWithCompanion(BrushingLogsCompanion data) {
+    return BrushingLogRow(
+      id: data.id.present ? data.id.value : this.id,
+      childId: data.childId.present ? data.childId.value : this.childId,
+      date: data.date.present ? data.date.value : this.date,
+      slot: data.slot.present ? data.slot.value : this.slot,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('BrushingLogRow(')
+          ..write('id: $id, ')
+          ..write('childId: $childId, ')
+          ..write('date: $date, ')
+          ..write('slot: $slot')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, childId, date, slot);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is BrushingLogRow &&
+          other.id == this.id &&
+          other.childId == this.childId &&
+          other.date == this.date &&
+          other.slot == this.slot);
+}
+
+class BrushingLogsCompanion extends UpdateCompanion<BrushingLogRow> {
+  final Value<int> id;
+  final Value<int> childId;
+  final Value<DateTime> date;
+  final Value<int> slot;
+  const BrushingLogsCompanion({
+    this.id = const Value.absent(),
+    this.childId = const Value.absent(),
+    this.date = const Value.absent(),
+    this.slot = const Value.absent(),
+  });
+  BrushingLogsCompanion.insert({
+    this.id = const Value.absent(),
+    required int childId,
+    required DateTime date,
+    required int slot,
+  }) : childId = Value(childId),
+       date = Value(date),
+       slot = Value(slot);
+  static Insertable<BrushingLogRow> custom({
+    Expression<int>? id,
+    Expression<int>? childId,
+    Expression<DateTime>? date,
+    Expression<int>? slot,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (childId != null) 'child_id': childId,
+      if (date != null) 'date': date,
+      if (slot != null) 'slot': slot,
+    });
+  }
+
+  BrushingLogsCompanion copyWith({
+    Value<int>? id,
+    Value<int>? childId,
+    Value<DateTime>? date,
+    Value<int>? slot,
+  }) {
+    return BrushingLogsCompanion(
+      id: id ?? this.id,
+      childId: childId ?? this.childId,
+      date: date ?? this.date,
+      slot: slot ?? this.slot,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (childId.present) {
+      map['child_id'] = Variable<int>(childId.value);
+    }
+    if (date.present) {
+      map['date'] = Variable<DateTime>(date.value);
+    }
+    if (slot.present) {
+      map['slot'] = Variable<int>(slot.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('BrushingLogsCompanion(')
+          ..write('id: $id, ')
+          ..write('childId: $childId, ')
+          ..write('date: $date, ')
+          ..write('slot: $slot')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -2077,6 +2376,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $CheckupRecordsTable checkupRecords = $CheckupRecordsTable(this);
   late final $ToothRecordsTable toothRecords = $ToothRecordsTable(this);
   late final $ClinicsTable clinics = $ClinicsTable(this);
+  late final $BrushingLogsTable brushingLogs = $BrushingLogsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -2087,6 +2387,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     checkupRecords,
     toothRecords,
     clinics,
+    brushingLogs,
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
@@ -2110,6 +2411,13 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         limitUpdateKind: UpdateKind.delete,
       ),
       result: [TableUpdate('tooth_records', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'children',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('brushing_logs', kind: UpdateKind.delete)],
     ),
   ]);
 }
@@ -2188,6 +2496,24 @@ final class $$ChildrenTableReferences
     ).filter((f) => f.childId.id.sqlEquals($_itemColumn<int>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_toothRecordsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$BrushingLogsTable, List<BrushingLogRow>>
+  _brushingLogsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.brushingLogs,
+    aliasName: 'children__id__brushing_logs__child_id',
+  );
+
+  $$BrushingLogsTableProcessedTableManager get brushingLogsRefs {
+    final manager = $$BrushingLogsTableTableManager(
+      $_db,
+      $_db.brushingLogs,
+    ).filter((f) => f.childId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_brushingLogsRefsTable($_db));
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -2299,6 +2625,31 @@ class $$ChildrenTableFilterComposer
           }) => $$ToothRecordsTableFilterComposer(
             $db: $db,
             $table: $db.toothRecords,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> brushingLogsRefs(
+    Expression<bool> Function($$BrushingLogsTableFilterComposer f) f,
+  ) {
+    final $$BrushingLogsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.brushingLogs,
+      getReferencedColumn: (t) => t.childId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$BrushingLogsTableFilterComposer(
+            $db: $db,
+            $table: $db.brushingLogs,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -2452,6 +2803,31 @@ class $$ChildrenTableAnnotationComposer
     );
     return f(composer);
   }
+
+  Expression<T> brushingLogsRefs<T extends Object>(
+    Expression<T> Function($$BrushingLogsTableAnnotationComposer a) f,
+  ) {
+    final $$BrushingLogsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.brushingLogs,
+      getReferencedColumn: (t) => t.childId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$BrushingLogsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.brushingLogs,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$ChildrenTableTableManager
@@ -2471,6 +2847,7 @@ class $$ChildrenTableTableManager
             bool preventiveTasksRefs,
             bool checkupRecordsRefs,
             bool toothRecordsRefs,
+            bool brushingLogsRefs,
           })
         > {
   $$ChildrenTableTableManager(_$AppDatabase db, $ChildrenTable table)
@@ -2529,6 +2906,7 @@ class $$ChildrenTableTableManager
                 preventiveTasksRefs = false,
                 checkupRecordsRefs = false,
                 toothRecordsRefs = false,
+                brushingLogsRefs = false,
               }) {
                 return PrefetchHooks(
                   db: db,
@@ -2536,6 +2914,7 @@ class $$ChildrenTableTableManager
                     if (preventiveTasksRefs) db.preventiveTasks,
                     if (checkupRecordsRefs) db.checkupRecords,
                     if (toothRecordsRefs) db.toothRecords,
+                    if (brushingLogsRefs) db.brushingLogs,
                   ],
                   addJoins: null,
                   getPrefetchedDataCallback: (items) async {
@@ -2603,6 +2982,27 @@ class $$ChildrenTableTableManager
                               ),
                           typedResults: items,
                         ),
+                      if (brushingLogsRefs)
+                        await $_getPrefetchedData<
+                          ChildrenData,
+                          $ChildrenTable,
+                          BrushingLogRow
+                        >(
+                          currentTable: table,
+                          referencedTable: $$ChildrenTableReferences
+                              ._brushingLogsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$ChildrenTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).brushingLogsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.childId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
                     ];
                   },
                 );
@@ -2627,6 +3027,7 @@ typedef $$ChildrenTableProcessedTableManager =
         bool preventiveTasksRefs,
         bool checkupRecordsRefs,
         bool toothRecordsRefs,
+        bool brushingLogsRefs,
       })
     >;
 typedef $$PreventiveTasksTableCreateCompanionBuilder =
@@ -3872,6 +4273,298 @@ typedef $$ClinicsTableProcessedTableManager =
       ClinicRow,
       PrefetchHooks Function()
     >;
+typedef $$BrushingLogsTableCreateCompanionBuilder =
+    BrushingLogsCompanion Function({
+      Value<int> id,
+      required int childId,
+      required DateTime date,
+      required int slot,
+    });
+typedef $$BrushingLogsTableUpdateCompanionBuilder =
+    BrushingLogsCompanion Function({
+      Value<int> id,
+      Value<int> childId,
+      Value<DateTime> date,
+      Value<int> slot,
+    });
+
+final class $$BrushingLogsTableReferences
+    extends BaseReferences<_$AppDatabase, $BrushingLogsTable, BrushingLogRow> {
+  $$BrushingLogsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $ChildrenTable _childIdTable(_$AppDatabase db) =>
+      db.children.createAlias('brushing_logs__child_id__children__id');
+
+  $$ChildrenTableProcessedTableManager get childId {
+    final $_column = $_itemColumn<int>('child_id')!;
+
+    final manager = $$ChildrenTableTableManager(
+      $_db,
+      $_db.children,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_childIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$BrushingLogsTableFilterComposer
+    extends Composer<_$AppDatabase, $BrushingLogsTable> {
+  $$BrushingLogsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get slot => $composableBuilder(
+    column: $table.slot,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$ChildrenTableFilterComposer get childId {
+    final $$ChildrenTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.childId,
+      referencedTable: $db.children,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ChildrenTableFilterComposer(
+            $db: $db,
+            $table: $db.children,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$BrushingLogsTableOrderingComposer
+    extends Composer<_$AppDatabase, $BrushingLogsTable> {
+  $$BrushingLogsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get slot => $composableBuilder(
+    column: $table.slot,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$ChildrenTableOrderingComposer get childId {
+    final $$ChildrenTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.childId,
+      referencedTable: $db.children,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ChildrenTableOrderingComposer(
+            $db: $db,
+            $table: $db.children,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$BrushingLogsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $BrushingLogsTable> {
+  $$BrushingLogsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get date =>
+      $composableBuilder(column: $table.date, builder: (column) => column);
+
+  GeneratedColumn<int> get slot =>
+      $composableBuilder(column: $table.slot, builder: (column) => column);
+
+  $$ChildrenTableAnnotationComposer get childId {
+    final $$ChildrenTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.childId,
+      referencedTable: $db.children,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ChildrenTableAnnotationComposer(
+            $db: $db,
+            $table: $db.children,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$BrushingLogsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $BrushingLogsTable,
+          BrushingLogRow,
+          $$BrushingLogsTableFilterComposer,
+          $$BrushingLogsTableOrderingComposer,
+          $$BrushingLogsTableAnnotationComposer,
+          $$BrushingLogsTableCreateCompanionBuilder,
+          $$BrushingLogsTableUpdateCompanionBuilder,
+          (BrushingLogRow, $$BrushingLogsTableReferences),
+          BrushingLogRow,
+          PrefetchHooks Function({bool childId})
+        > {
+  $$BrushingLogsTableTableManager(_$AppDatabase db, $BrushingLogsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$BrushingLogsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$BrushingLogsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$BrushingLogsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> childId = const Value.absent(),
+                Value<DateTime> date = const Value.absent(),
+                Value<int> slot = const Value.absent(),
+              }) => BrushingLogsCompanion(
+                id: id,
+                childId: childId,
+                date: date,
+                slot: slot,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int childId,
+                required DateTime date,
+                required int slot,
+              }) => BrushingLogsCompanion.insert(
+                id: id,
+                childId: childId,
+                date: date,
+                slot: slot,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$BrushingLogsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({childId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (childId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.childId,
+                                referencedTable: $$BrushingLogsTableReferences
+                                    ._childIdTable(db),
+                                referencedColumn: $$BrushingLogsTableReferences
+                                    ._childIdTable(db)
+                                    .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$BrushingLogsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $BrushingLogsTable,
+      BrushingLogRow,
+      $$BrushingLogsTableFilterComposer,
+      $$BrushingLogsTableOrderingComposer,
+      $$BrushingLogsTableAnnotationComposer,
+      $$BrushingLogsTableCreateCompanionBuilder,
+      $$BrushingLogsTableUpdateCompanionBuilder,
+      (BrushingLogRow, $$BrushingLogsTableReferences),
+      BrushingLogRow,
+      PrefetchHooks Function({bool childId})
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -3886,4 +4579,6 @@ class $AppDatabaseManager {
       $$ToothRecordsTableTableManager(_db, _db.toothRecords);
   $$ClinicsTableTableManager get clinics =>
       $$ClinicsTableTableManager(_db, _db.clinics);
+  $$BrushingLogsTableTableManager get brushingLogs =>
+      $$BrushingLogsTableTableManager(_db, _db.brushingLogs);
 }

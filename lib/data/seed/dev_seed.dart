@@ -1,5 +1,7 @@
+import '../../domain/models/brushing.dart';
 import '../../domain/services/schedule_engine.dart';
 import '../local/app_database.dart';
+import '../repositories_impl/brushing_repository_impl.dart';
 import '../repositories_impl/checkup_repository_impl.dart';
 import '../repositories_impl/child_repository_impl.dart';
 import '../repositories_impl/preventive_task_repository_impl.dart';
@@ -49,4 +51,27 @@ Future<void> runDevSeed(AppDatabase db) async {
     clinicName: '해맑은치과',
     memo: '불소도포 · 충치 없음',
   );
+
+  // 양치 기록: 지호는 최근 5일 연속 + 오늘 아침만, 서아는 띄엄띄엄.
+  final brushing = BrushingRepositoryImpl(db);
+  final today = dayOf(DateTime.now());
+  Future<void> brush(int childId, int daysAgo, List<BrushingSlot> slots) async {
+    for (final slot in slots) {
+      await brushing.setBrushed(
+        childId: childId,
+        date: DateTime(today.year, today.month, today.day - daysAgo),
+        slot: slot,
+        brushed: true,
+      );
+    }
+  }
+
+  for (var i = 1; i <= 5; i++) {
+    await brush(jihoId, i, BrushingSlot.values);
+  }
+  await brush(jihoId, 0, [BrushingSlot.morning]);
+  for (final i in [2, 3, 6, 9]) {
+    await brush(seoaId, i, BrushingSlot.values);
+  }
+  await brush(seoaId, 1, [BrushingSlot.night]);
 }

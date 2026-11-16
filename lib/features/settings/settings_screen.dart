@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/providers.dart';
@@ -89,6 +90,19 @@ class SettingsScreen extends ConsumerWidget {
             ),
           ),
           const Divider(),
+          ListTile(
+            leading: const Icon(Icons.upload_file_outlined),
+            title: const Text('백업 만들기'),
+            subtitle: const Text('모든 기록을 백업 코드로 복사해요. 메모장·메신저에 붙여넣어 보관하세요.'),
+            onTap: () => _exportBackup(context, ref),
+          ),
+          ListTile(
+            leading: const Icon(Icons.restore),
+            title: const Text('백업에서 복원'),
+            subtitle: const Text('보관한 백업 코드를 붙여넣어 기록을 되살려요.'),
+            onTap: () => _importBackup(context, ref),
+          ),
+          const Divider(),
           const ListTile(
             leading: Icon(Icons.info_outline),
             title: Text('안내'),
@@ -100,5 +114,67 @@ class SettingsScreen extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  Future<void> _exportBackup(BuildContext context, WidgetRef ref) async {
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      final json = await ref.read(backupServiceProvider).exportToJson();
+      await Clipboard.setData(ClipboardData(text: json));
+      messenger.showSnackBar(
+        const SnackBar(content: Text('백업 코드를 복사했어요. 안전한 곳에 붙여넣어 보관하세요.')),
+      );
+    } catch (e) {
+      messenger.showSnackBar(SnackBar(content: Text('백업에 실패했어요: $e')));
+    }
+  }
+
+  Future<void> _importBackup(BuildContext context, WidgetRef ref) async {
+    final controller = TextEditingController();
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('백업에서 복원'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('지금 앱에 있는 기록은 모두 백업 내용으로 바뀌어요.'),
+            const SizedBox(height: 12),
+            TextField(
+              controller: controller,
+              maxLines: 4,
+              decoration: const InputDecoration(
+                hintText: '백업 코드를 붙여넣으세요',
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('취소'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('복원'),
+          ),
+        ],
+      ),
+    );
+    final text = controller.text.trim();
+    controller.dispose();
+    if (ok != true || text.isEmpty || !context.mounted) return;
+
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      await ref.read(backupServiceProvider).importFromJson(text);
+      await rescheduleAllNotifications(ref);
+      messenger.showSnackBar(const SnackBar(content: Text('복원했어요.')));
+    } catch (_) {
+      messenger.showSnackBar(
+        const SnackBar(content: Text('백업 코드가 올바르지 않아요. 기존 기록은 그대로예요.')),
+      );
+    }
   }
 }

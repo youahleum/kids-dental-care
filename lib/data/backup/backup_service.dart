@@ -24,6 +24,7 @@ class BackupService {
     final checkups = await _db.select(_db.checkupRecords).get();
     final teeth = await _db.select(_db.toothRecords).get();
     final clinics = await _db.select(_db.clinics).get();
+    final brushing = await _db.select(_db.brushingLogs).get();
 
     return {
       'formatVersion': formatVersion,
@@ -84,6 +85,15 @@ class BackupService {
             'updatedAt': _ms(t.updatedAt),
           },
       ],
+      'brushingLogs': [
+        for (final b in brushing)
+          {
+            'id': b.id,
+            'childId': b.childId,
+            'date': _ms(b.date),
+            'slot': b.slot,
+          },
+      ],
     };
   }
 
@@ -101,6 +111,7 @@ class BackupService {
 
     await _db.transaction(() async {
       // FK cascade 순서 상관없이 안전하게 자식부터 삭제.
+      await _db.delete(_db.brushingLogs).go();
       await _db.delete(_db.toothRecords).go();
       await _db.delete(_db.checkupRecords).go();
       await _db.delete(_db.preventiveTasks).go();
@@ -180,6 +191,20 @@ class BackupService {
                 status: t['status'] as int,
                 note: Value(t['note'] as String?),
                 updatedAt: _dt(t['updatedAt'] as int),
+              ),
+            );
+      }
+
+      // 양치 기록은 나중에 추가된 항목이라 옛 백업에는 없을 수 있다.
+      final brushing = (data['brushingLogs'] as List? ?? const [])
+          .cast<Map<String, dynamic>>();
+      for (final b in brushing) {
+        await _db.into(_db.brushingLogs).insert(
+              BrushingLogsCompanion.insert(
+                id: Value(b['id'] as int),
+                childId: b['childId'] as int,
+                date: _dt(b['date'] as int),
+                slot: b['slot'] as int,
               ),
             );
       }

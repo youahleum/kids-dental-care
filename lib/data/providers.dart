@@ -1,20 +1,24 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../domain/models/brushing.dart';
 import '../domain/models/checkup_record.dart';
 import '../domain/models/child.dart';
 import '../domain/models/clinic.dart';
 import '../domain/models/preventive_task.dart';
 import '../domain/models/tooth_record.dart';
+import '../domain/repositories/brushing_repository.dart';
 import '../domain/repositories/checkup_repository.dart';
 import '../domain/repositories/clinic_repository.dart';
 import '../domain/repositories/child_repository.dart';
 import '../domain/repositories/preventive_task_repository.dart';
 import '../domain/repositories/tooth_repository.dart';
+import '../domain/services/brushing_stats.dart';
 import '../domain/services/dashboard_stats.dart';
 import '../domain/services/notification_service.dart';
 import 'backup/backup_service.dart';
 import 'local/app_database.dart';
 import 'notifications/notification_service_factory.dart';
+import 'repositories_impl/brushing_repository_impl.dart';
 import 'repositories_impl/checkup_repository_impl.dart';
 import 'repositories_impl/clinic_repository_impl.dart';
 import 'repositories_impl/child_repository_impl.dart';
@@ -99,4 +103,22 @@ final dashboardStatsProvider =
     checkups: checkups,
     teeth: teeth,
   );
+});
+
+final brushingRepositoryProvider = Provider<BrushingRepository>((ref) {
+  return BrushingRepositoryImpl(ref.watch(appDatabaseProvider));
+});
+
+/// 특정 자녀의 양치 기록(날짜→시간대) 실시간 스트림.
+final brushingLogsProvider =
+    StreamProvider.family<Map<DateTime, Set<BrushingSlot>>, int>(
+        (ref, childId) {
+  return ref.watch(brushingRepositoryProvider).watchByChild(childId);
+});
+
+/// 특정 자녀의 양치 요약(오늘·연속일·스티커).
+final brushingStatsProvider =
+    Provider.family<BrushingStats, int>((ref, childId) {
+  final logs = ref.watch(brushingLogsProvider(childId)).valueOrNull ?? const {};
+  return BrushingStats.compute(logs);
 });

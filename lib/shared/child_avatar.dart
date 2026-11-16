@@ -12,7 +12,13 @@ class ChildAvatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = Color(child.colorValue);
-    final initial = child.name.isNotEmpty ? child.name.characters.first : '?';
+    // 한국 이름은 첫 글자가 성이라 형제끼리 겹친다 → 이름(마지막 두 글자)을 표시.
+    final chars = child.name.characters;
+    final initial = chars.isEmpty
+        ? '?'
+        : chars.length >= 3
+            ? chars.skip(chars.length - 2).string
+            : chars.first;
     return Container(
       width: size,
       height: size,
@@ -26,7 +32,7 @@ class ChildAvatar extends StatelessWidget {
         style: TextStyle(
           color: Colors.white,
           fontWeight: FontWeight.bold,
-          fontSize: size * 0.42,
+          fontSize: size * (initial.length > 1 ? 0.32 : 0.42),
         ),
       ),
     );

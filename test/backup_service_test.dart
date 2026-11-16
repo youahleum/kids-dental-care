@@ -2,11 +2,13 @@ import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kids_dental_care/data/backup/backup_service.dart';
 import 'package:kids_dental_care/data/local/app_database.dart';
+import 'package:kids_dental_care/data/repositories_impl/brushing_repository_impl.dart';
 import 'package:kids_dental_care/data/repositories_impl/checkup_repository_impl.dart';
 import 'package:kids_dental_care/data/repositories_impl/child_repository_impl.dart';
 import 'package:kids_dental_care/data/repositories_impl/clinic_repository_impl.dart';
 import 'package:kids_dental_care/data/repositories_impl/preventive_task_repository_impl.dart';
 import 'package:kids_dental_care/data/repositories_impl/tooth_repository_impl.dart';
+import 'package:kids_dental_care/domain/models/brushing.dart';
 import 'package:kids_dental_care/domain/models/tooth_record.dart';
 import 'package:kids_dental_care/domain/services/schedule_engine.dart';
 
@@ -49,6 +51,13 @@ void main() {
     // 단골 치과도 하나
     final clinicRepo = ClinicRepositoryImpl(db);
     await clinicRepo.add(name: '해맑은치과', phone: '02-123-4567');
+
+    // 양치 기록도 하나
+    await BrushingRepositoryImpl(db).setBrushed(
+        childId: childId,
+        date: DateTime(2026, 11, 1),
+        slot: BrushingSlot.night,
+        brushed: true);
   }
 
   Future<Map<String, int>> counts() async => {
@@ -57,6 +66,7 @@ void main() {
         'checkups': (await db.select(db.checkupRecords).get()).length,
         'teeth': (await db.select(db.toothRecords).get()).length,
         'clinics': (await db.select(db.clinics).get()).length,
+        'brushing': (await db.select(db.brushingLogs).get()).length,
       };
 
   test('export → import 라운드트립: 데이터가 동일하게 복원된다', () async {
@@ -109,6 +119,14 @@ void main() {
     await backup.importFromJson(json);
     await backup.importFromJson(json);
     expect(await counts(), before);
+  });
+
+  test('양치 기록이 없는 옛 백업도 복원된다', () async {
+    await seed();
+    final data = await backup.exportToMap()..remove('brushingLogs');
+    await backup.importFromMap(data);
+    expect((await counts())['children'], 1);
+    expect((await counts())['brushing'], 0);
   });
 
   test('지원하지 않는 버전은 예외', () async {

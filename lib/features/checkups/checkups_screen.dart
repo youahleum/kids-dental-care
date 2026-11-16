@@ -26,6 +26,7 @@ class CheckupsScreen extends ConsumerWidget {
       floatingActionButton: child == null
           ? null
           : FloatingActionButton(
+              heroTag: 'checkups-fab',
               onPressed: () => Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (_) => CheckupAddScreen(childId: child.id),

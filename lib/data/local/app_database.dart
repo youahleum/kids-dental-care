@@ -71,14 +71,36 @@ class Clinics extends Table {
   DateTimeColumn get createdAt => dateTime()();
 }
 
-@DriftDatabase(
-    tables: [Children, PreventiveTasks, CheckupRecords, ToothRecords, Clinics])
+/// 양치 기록 테이블. (childId, date, slot) 당 1개 — 있으면 '양치함'.
+/// date는 그날 0시(로컬), slot은 [BrushingSlot] 인덱스.
+@DataClassName('BrushingLogRow')
+class BrushingLogs extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get childId =>
+      integer().references(Children, #id, onDelete: KeyAction.cascade)();
+  DateTimeColumn get date => dateTime()();
+  IntColumn get slot => integer()();
+
+  @override
+  List<Set<Column>> get uniqueKeys => [
+        {childId, date, slot},
+      ];
+}
+
+@DriftDatabase(tables: [
+  Children,
+  PreventiveTasks,
+  CheckupRecords,
+  ToothRecords,
+  Clinics,
+  BrushingLogs,
+])
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor])
       : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -95,6 +117,9 @@ class AppDatabase extends _$AppDatabase {
           }
           if (from < 5) {
             await m.createTable(clinics);
+          }
+          if (from < 6) {
+            await m.createTable(brushingLogs);
           }
         },
         beforeOpen: (details) async {
