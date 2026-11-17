@@ -48,7 +48,8 @@ class _ChildEditScreenState extends ConsumerState<ChildEditScreen> {
     final picked = await showDatePicker(
       context: context,
       initialDate: _birthDate ?? now,
-      firstDate: DateTime(now.year - 18),
+      // 가족 앱이라 어른(조부모 포함)도 등록할 수 있어야 한다.
+      firstDate: DateTime(1920),
       lastDate: now,
       helpText: '생년월일 선택',
     );
