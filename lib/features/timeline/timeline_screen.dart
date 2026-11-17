@@ -75,21 +75,34 @@ class _TimelineList extends ConsumerWidget {
         // 임박 항목: 미완료 중 권장일이 가장 가까운(오늘 이후 우선) 것.
         final next = _nextTask(all);
 
+        final showNext = next != null && filter != _Filter.done;
+        final rows = [
+          for (final t in tasks)
+            if (!showNext || t.id != next.id) t,
+        ];
+
         return ListView(
           padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
           children: [
             const _DisclaimerBanner(),
-            if (next != null && filter != _Filter.done) ...[
+            if (showNext) ...[
+              Padding(
+                padding: const EdgeInsets.only(left: 4, bottom: 6),
+                child: Text('다음 할 일',
+                    style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: Theme.of(context).colorScheme.tertiary)),
+              ),
               _TaskCard(task: next, highlight: true),
-              const SizedBox(height: 8),
-              const Divider(),
+              const SizedBox(height: 16),
             ],
-            for (final t in tasks)
-              if (t.id != next?.id || filter == _Filter.done)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: _TaskCard(task: t),
-                ),
+            for (var i = 0; i < rows.length; i++)
+              _TimelineRow(
+                task: rows[i],
+                isFirst: i == 0,
+                isLast: i == rows.length - 1,
+              ),
           ],
         );
       },
@@ -109,6 +122,68 @@ class _TimelineList extends ConsumerWidget {
     // 모두 지난 경우 가장 최근에 지난 것
     pending.sort((a, b) => b.recommendedDate.compareTo(a.recommendedDate));
     return pending.first;
+  }
+}
+
+/// 타임라인 한 줄: 왼쪽 세로선·상태 점 + 오른쪽 카드.
+class _TimelineRow extends StatelessWidget {
+  const _TimelineRow({
+    required this.task,
+    required this.isFirst,
+    required this.isLast,
+  });
+
+  final PreventiveTask task;
+  final bool isFirst;
+  final bool isLast;
+
+  @override
+  Widget build(BuildContext context) {
+    final (_, color) = TaskStatusView.resolve(task);
+    final done = task.status == TaskStatus.done;
+    final line = Theme.of(context).colorScheme.outlineVariant;
+
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          SizedBox(
+            width: 30,
+            child: Column(
+              children: [
+                Container(
+                    width: 2,
+                    height: 24,
+                    color: isFirst ? Colors.transparent : line),
+                Container(
+                  width: 18,
+                  height: 18,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: done ? color : Theme.of(context).cardTheme.color,
+                    border: Border.all(color: color, width: 3),
+                  ),
+                  child: done
+                      ? const Icon(Icons.check, size: 11, color: Colors.white)
+                      : null,
+                ),
+                Expanded(
+                  child: Container(
+                      width: 2, color: isLast ? Colors.transparent : line),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 6),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: _TaskCard(task: task),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -146,12 +221,16 @@ class _TaskCard extends ConsumerWidget {
                   children: [
                     Text(
                       task.title,
-                      style: const TextStyle(
-                          fontSize: 14, fontWeight: FontWeight.w600),
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        decoration: done ? TextDecoration.lineThrough : null,
+                        color: done ? Theme.of(context).hintColor : null,
+                      ),
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      DateFormat('yyyy-MM-dd').format(task.recommendedDate),
+                      DateFormat('yyyy.M.d').format(task.recommendedDate),
                       style: TextStyle(
                           fontSize: 11, color: Theme.of(context).hintColor),
                     ),
