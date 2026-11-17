@@ -13,7 +13,10 @@ enum ToothStatus {
 enum ToothEventKind {
   statusChange('상태 변경'), // 충치·치료 등 상태가 바뀜
   lost('빠짐'), // 유치가 빠짐
-  erupted('남'); // 영구치가 남
+  erupted('남'), // 영구치가 남
+  // 앞선 빠짐·남 기록을 무효로 하고 그 자리를 이전 상태로 되돌림
+  // ("아직 유치예요" / "아직 안 났어요"). 영구치 코드에 기록한다.
+  markedBack('되돌림');
 
   const ToothEventKind(this.label);
 

@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import '../../domain/models/tooth_layout.dart';
@@ -9,11 +11,15 @@ class ToothPainter extends CustomPainter {
     required this.kind,
     required this.fill,
     required this.border,
+    this.dashed = false,
   });
 
   final ToothKind kind;
   final Color fill;
   final Color border;
+
+  /// true면 채우지 않고 점선 윤곽만 그린다 (빈자리).
+  final bool dashed;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -25,6 +31,21 @@ class ToothPainter extends CustomPainter {
       ToothKind.premolar => _premolar(w, h),
       ToothKind.molar => _molar(w, h),
     };
+    if (dashed) {
+      final paint = Paint()
+        ..color = border
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.2
+        ..strokeCap = StrokeCap.round;
+      for (final metric in path.computeMetrics()) {
+        for (var d = 0.0; d < metric.length; d += 6) {
+          canvas.drawPath(
+              metric.extractPath(d, math.min(d + 3, metric.length)), paint);
+        }
+      }
+      return;
+    }
+
     // 바닥 그림자 → 입체감.
     canvas.drawPath(
       path.shift(const Offset(0, 1.2)),
@@ -129,5 +150,8 @@ class ToothPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(ToothPainter old) =>
-      old.kind != kind || old.fill != fill || old.border != border;
+      old.kind != kind ||
+      old.fill != fill ||
+      old.border != border ||
+      old.dashed != dashed;
 }
