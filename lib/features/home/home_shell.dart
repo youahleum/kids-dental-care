@@ -9,6 +9,7 @@ import '../timeline/timeline_screen.dart';
 import '../tooth_chart/tooth_chart_screen.dart';
 import 'home_screen.dart';
 import 'tab_index.dart';
+import '../../shared/motion.dart';
 
 /// 하단 4탭 셸. 기준: DESIGN.md 5장 (내비게이션 구조)
 class HomeShell extends ConsumerWidget {
@@ -31,7 +32,10 @@ class HomeShell extends ConsumerWidget {
 
     final index = ref.watch(tabIndexProvider);
     return Scaffold(
-      body: IndexedStack(index: index, children: _tabs),
+      body: TabFade(
+        index: index,
+        child: IndexedStack(index: index, children: _tabs),
+      ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: index,
         onDestinationSelected: (i) =>

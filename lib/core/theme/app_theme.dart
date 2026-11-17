@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart' show CupertinoPageTransitionsBuilder;
 import 'package:flutter/material.dart';
 
 import 'app_colors.dart';
@@ -83,6 +84,11 @@ abstract final class AppTheme {
       brightness: p.brightness,
       colorScheme: scheme,
       scaffoldBackgroundColor: p.background,
+      // 화면 이동: 안드로이드는 부드러운 페이드, iOS는 기본 밀기.
+      pageTransitionsTheme: const PageTransitionsTheme(builders: {
+        TargetPlatform.android: FadeForwardsPageTransitionsBuilder(),
+        TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+      }),
       appBarTheme: AppBarTheme(
         backgroundColor: p.appBar,
         foregroundColor: Colors.white,

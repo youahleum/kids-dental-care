@@ -15,6 +15,7 @@ import '../children/selected_child.dart';
 import '../settings/settings_screen.dart';
 import 'tab_index.dart';
 import '../../shared/gradient_app_bar.dart';
+import '../../shared/motion.dart';
 
 /// 홈 · 가족 구성원 선택. 기준: DESIGN.md 6-1
 class HomeScreen extends ConsumerWidget {
@@ -80,14 +81,17 @@ class HomeScreen extends ConsumerWidget {
                   itemBuilder: (context, i) {
                     if (i == 0) return _FamilyBrushingCard(members: children);
                     final c = children[i - 1];
-                    return _ChildCard(
-                      child: c,
-                      onTap: () {
-                        ref.read(selectedChildIdProvider.notifier).state = c.id;
-                        ref.read(tabIndexProvider.notifier).state = 1; // 타임라인
-                      },
-                      onEdit: () => _openEdit(context, existing: c),
-                      onDelete: () => _confirmDelete(context, ref, c),
+                    return PressableScale(
+                      child: _ChildCard(
+                        child: c,
+                        onTap: () {
+                          ref.read(selectedChildIdProvider.notifier).state =
+                              c.id;
+                          ref.read(tabIndexProvider.notifier).state = 1; // 타임라인
+                        },
+                        onEdit: () => _openEdit(context, existing: c),
+                        onDelete: () => _confirmDelete(context, ref, c),
+                      ),
                     );
                   },
                 );

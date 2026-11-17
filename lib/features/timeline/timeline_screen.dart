@@ -11,6 +11,7 @@ import '../children/selected_child.dart';
 import '../home/tab_index.dart';
 import 'task_status_view.dart';
 import '../../shared/gradient_app_bar.dart';
+import '../../shared/motion.dart';
 
 enum _Filter { all, pending, done }
 
@@ -103,7 +104,7 @@ class _TimelineList extends ConsumerWidget {
                         fontWeight: FontWeight.w700,
                         color: Theme.of(context).colorScheme.tertiary)),
               ),
-              _TaskCard(task: next, highlight: true),
+              PressableScale(child: _TaskCard(task: next, highlight: true)),
               const SizedBox(height: 16),
             ],
             for (var i = 0; i < rows.length; i++)
@@ -187,7 +188,7 @@ class _TimelineRow extends StatelessWidget {
           Expanded(
             child: Padding(
               padding: const EdgeInsets.only(bottom: 10),
-              child: _TaskCard(task: task),
+              child: PressableScale(child: _TaskCard(task: task)),
             ),
           ),
         ],
