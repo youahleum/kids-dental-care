@@ -72,6 +72,8 @@ class LocalNotificationService implements NotificationService {
         scheduledDate: tz.TZDateTime.from(n.fireDate, tz.local),
         notificationDetails: details,
         androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+        matchDateTimeComponents:
+            n.repeatDaily ? DateTimeComponents.time : null,
       );
     }
   }

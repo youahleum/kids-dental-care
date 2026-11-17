@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/settings/settings_repository.dart';
 import '../../domain/models/app_settings.dart';
+import '../../domain/models/brushing.dart';
 
 final settingsRepositoryProvider = Provider((ref) => SettingsRepository());
 
@@ -35,6 +36,19 @@ class SettingsNotifier extends Notifier<AppSettings> {
 
   Future<void> setCheckupIntervalMonths(int months) async {
     state = state.copyWith(checkupIntervalMonths: months);
+    await _persist();
+  }
+
+  Future<void> setBrushingReminderEnabled(bool v) async {
+    state = state.copyWith(brushingReminderEnabled: v);
+    await _persist();
+  }
+
+  Future<void> setBrushHour(BrushingSlot slot, int hour) async {
+    state = switch (slot) {
+      BrushingSlot.morning => state.copyWith(morningBrushHour: hour),
+      BrushingSlot.night => state.copyWith(nightBrushHour: hour),
+    };
     await _persist();
   }
 }

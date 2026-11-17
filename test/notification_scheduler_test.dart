@@ -66,4 +66,24 @@ void main() {
       expect(result[0].id, isNot(result[1].id));
     });
   });
+
+  group('NotificationScheduler.forBrushing', () {
+    test('아침·자기 전 2건, 매일 반복, 다음 시각으로 예약', () {
+      final r = NotificationScheduler.forBrushing(
+          morningHour: 8, nightHour: 21, now: DateTime(2026, 8, 13, 10));
+      expect(r, hasLength(2));
+      expect(r.every((n) => n.repeatDaily), isTrue);
+      // 아침 8시는 이미 지났으니 내일, 밤 9시는 오늘
+      expect(r[0].fireDate, DateTime(2026, 8, 14, 8));
+      expect(r[1].fireDate, DateTime(2026, 8, 13, 21));
+    });
+
+    test('id가 예방 알림 id 공간과 겹치지 않는다', () {
+      final r = NotificationScheduler.forBrushing(
+          morningHour: 8, nightHour: 21, now: now);
+      expect(r.map((n) => n.id),
+          everyElement(greaterThanOrEqualTo(NotificationScheduler.brushingIdBase)));
+      expect(r.map((n) => n.id).toSet(), hasLength(2));
+    });
+  });
 }

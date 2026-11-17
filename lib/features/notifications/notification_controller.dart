@@ -12,17 +12,26 @@ Future<void> rescheduleAllNotifications(WidgetRef ref) async {
   final service = ref.read(notificationServiceProvider);
   final settings = ref.read(settingsProvider);
 
-  if (!settings.notificationsEnabled) {
+  if (!settings.notificationsEnabled && !settings.brushingReminderEnabled) {
     await service.cancelAll();
     return;
   }
 
   await service.init();
 
-  final children = await ref.read(childRepositoryProvider).getAll();
+  final all = <ScheduledNotification>[
+    if (settings.brushingReminderEnabled)
+      ...NotificationScheduler.forBrushing(
+        morningHour: settings.morningBrushHour,
+        nightHour: settings.nightBrushHour,
+      ),
+  ];
+
+  final children = settings.notificationsEnabled
+      ? await ref.read(childRepositoryProvider).getAll()
+      : const [];
   final taskRepo = ref.read(preventiveTaskRepositoryProvider);
 
-  final all = <ScheduledNotification>[];
   for (final child in children) {
     final tasks = await taskRepo.watchByChild(child.id).first;
     final scheduled = NotificationScheduler.forTasks(

@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/providers.dart';
 import '../clinics/clinics_screen.dart';
 import '../notifications/notification_controller.dart';
+import '../../domain/models/brushing.dart';
 import 'settings_controller.dart';
 
 /// 설정 화면. 기준: DESIGN.md 6-6
@@ -64,6 +65,55 @@ class SettingsScreen extends ConsumerWidget {
                   }
                 : null,
           ),
+          const Divider(),
+          SwitchListTile(
+            title: const Text('양치 알림'),
+            subtitle: const Text('매일 아침·자기 전에 양치 시간을 알려드려요.'),
+            value: settings.brushingReminderEnabled,
+            onChanged: (v) async {
+              await notifier.setBrushingReminderEnabled(v);
+              if (v) {
+                final granted = await ref
+                    .read(notificationServiceProvider)
+                    .requestPermission();
+                if (!granted && context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('기기 설정에서 알림 권한을 허용해 주세요.'),
+                    ),
+                  );
+                }
+              }
+              await rescheduleAllNotifications(ref);
+            },
+          ),
+          for (final slot in BrushingSlot.values)
+            ListTile(
+              enabled: settings.brushingReminderEnabled,
+              leading: Text(slot.emoji, style: const TextStyle(fontSize: 20)),
+              title: Text('${slot.label} 알림 시각'),
+              trailing: Text(
+                '${(slot == BrushingSlot.morning ? settings.morningBrushHour : settings.nightBrushHour).toString().padLeft(2, '0')}:00',
+                style: const TextStyle(fontSize: 16),
+              ),
+              onTap: settings.brushingReminderEnabled
+                  ? () async {
+                      final picked = await showTimePicker(
+                        context: context,
+                        initialTime: TimeOfDay(
+                            hour: slot == BrushingSlot.morning
+                                ? settings.morningBrushHour
+                                : settings.nightBrushHour,
+                            minute: 0),
+                        helpText: '${slot.label} 양치 알림 시각',
+                      );
+                      if (picked != null) {
+                        await notifier.setBrushHour(slot, picked.hour);
+                        await rescheduleAllNotifications(ref);
+                      }
+                    }
+                  : null,
+            ),
           const Divider(),
           ListTile(
             leading: const Icon(Icons.event_repeat),

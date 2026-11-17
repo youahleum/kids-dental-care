@@ -1,3 +1,4 @@
+import '../models/brushing.dart';
 import '../models/preventive_task.dart';
 
 /// 예약할 알림 1건.
@@ -7,6 +8,7 @@ class ScheduledNotification {
     required this.fireDate,
     required this.title,
     required this.body,
+    this.repeatDaily = false,
   });
 
   /// 안정적 알림 id (같은 항목·시점이면 항상 같은 값 → 재예약 시 갱신).
@@ -14,6 +16,9 @@ class ScheduledNotification {
   final DateTime fireDate;
   final String title;
   final String body;
+
+  /// true면 [fireDate]의 시:분에 매일 반복.
+  final bool repeatDaily;
 }
 
 /// 예방치료/검진 항목에서 로컬 알림 예약 목록을 계산한다.
@@ -63,6 +68,36 @@ abstract final class NotificationScheduler {
       }
     }
     return result;
+  }
+
+  /// 양치 알림 id 공간. 예방 알림(구성원 id * 1000 + n)과 겹치지 않게 크게 잡는다.
+  static const brushingIdBase = 900000;
+
+  /// 매일 반복되는 양치 알림(아침·자기 전). 가족 전체에 한 번씩 보낸다.
+  static List<ScheduledNotification> forBrushing({
+    required int morningHour,
+    required int nightHour,
+    DateTime? now,
+  }) {
+    final ref = now ?? DateTime.now();
+    ScheduledNotification make(BrushingSlot slot, int hour, String body) {
+      var at = _atHour(ref, hour);
+      if (!at.isAfter(ref)) at = DateTime(at.year, at.month, at.day + 1, hour);
+      return ScheduledNotification(
+        id: brushingIdBase + slot.index,
+        fireDate: at,
+        title: '${slot.emoji} ${slot.label} 양치 시간',
+        body: body,
+        repeatDaily: true,
+      );
+    }
+
+    return [
+      make(BrushingSlot.morning, morningHour,
+          '가족 모두 아침 양치하고 앱에서 체크해요! 🪥'),
+      make(BrushingSlot.night, nightHour,
+          '자기 전 양치가 가장 중요해요. 다 닦았으면 스티커 받기 ⭐'),
+    ];
   }
 
   static DateTime _atHour(DateTime date, int hour) =>
