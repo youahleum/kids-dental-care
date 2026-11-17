@@ -74,10 +74,11 @@ class HomeScreen extends ConsumerWidget {
                 if (children.isEmpty) return const _EmptyState();
                 return ListView.separated(
                   padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
-                  itemCount: children.length,
+                  itemCount: children.length + 1,
                   separatorBuilder: (_, _) => const SizedBox(height: 14),
                   itemBuilder: (context, i) {
-                    final c = children[i];
+                    if (i == 0) return _FamilyBrushingCard(members: children);
+                    final c = children[i - 1];
                     return _ChildCard(
                       child: c,
                       onTap: () {
@@ -343,6 +344,84 @@ class _BrushingRow extends ConsumerWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+/// 오늘 가족 양치 현황: 'N/M명 완료' + 구성원별 아침·자기 전 표시.
+class _FamilyBrushingCard extends ConsumerWidget {
+  const _FamilyBrushingCard({required this.members});
+
+  final List<Child> members;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final todays = {
+      for (final m in members) m.id: ref.watch(brushingStatsProvider(m.id)).today,
+    };
+    final done = todays.values
+        .where((slots) => slots.length == BrushingSlot.values.length)
+        .length;
+    final all = done == members.length;
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Text('🪥', style: TextStyle(fontSize: 20)),
+                const SizedBox(width: 8),
+                const Text('오늘 가족 양치',
+                    style:
+                        TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+                const Spacer(),
+                Text(
+                  all ? '모두 완료! 🎉' : '$done/${members.length}명 완료',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: all ? AppColors.statusDone : AppColors.mintDark,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: LinearProgressIndicator(
+                value: members.isEmpty ? 0 : done / members.length,
+                minHeight: 6,
+                backgroundColor: const Color(0xFFEDF2F4),
+                color: all ? AppColors.statusDone : AppColors.mint,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 14,
+              runSpacing: 10,
+              children: [
+                for (final m in members)
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ChildAvatar(child: m, size: 28),
+                      const SizedBox(width: 6),
+                      for (final slot in BrushingSlot.values)
+                        Opacity(
+                          opacity: todays[m.id]!.contains(slot) ? 1 : 0.25,
+                          child: Text(slot.emoji,
+                              style: const TextStyle(fontSize: 14)),
+                        ),
+                    ],
+                  ),
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
