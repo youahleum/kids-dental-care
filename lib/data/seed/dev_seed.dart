@@ -1,10 +1,12 @@
 import '../../domain/models/brushing.dart';
+import '../../domain/models/tooth_record.dart';
 import '../../domain/services/schedule_engine.dart';
 import '../local/app_database.dart';
 import '../repositories_impl/brushing_repository_impl.dart';
 import '../repositories_impl/checkup_repository_impl.dart';
 import '../repositories_impl/child_repository_impl.dart';
 import '../repositories_impl/preventive_task_repository_impl.dart';
+import '../repositories_impl/tooth_repository_impl.dart';
 
 /// 개발용 샘플 데이터 시드. `--dart-define=SEED=true`일 때만 실행되며,
 /// DB가 비어있을 때 한 번만 채운다. (프로덕션 미포함)
@@ -65,6 +67,53 @@ Future<void> runDevSeed(AppDatabase db) async {
     date: DateTime(2025, 12, 2),
     clinicName: '해맑은치과',
     memo: '스케일링 · 잇몸 양호',
+  );
+
+  // 치아 이력: 서아는 충치가 생겼다가 일부 치료됨 + 앞니 이갈이 진행 중
+  final teeth = ToothRepositoryImpl(db);
+  final now = DateTime.now();
+  DateTime monthsAgo(int m, int day) => DateTime(now.year, now.month - m, day);
+  await teeth.setStatus(
+    childId: seoaId,
+    toothCode: 54,
+    status: ToothStatus.caries,
+    at: monthsAgo(9, 3),
+  );
+  await teeth.setStatus(
+    childId: seoaId,
+    toothCode: 74,
+    status: ToothStatus.caries,
+    at: monthsAgo(6, 12),
+  );
+  await teeth.setStatus(
+    childId: seoaId,
+    toothCode: 85,
+    status: ToothStatus.sealant,
+    at: monthsAgo(5, 20),
+  );
+  await teeth.setStatus(
+    childId: seoaId,
+    toothCode: 54,
+    status: ToothStatus.treated,
+    at: monthsAgo(3, 8),
+  );
+  await teeth.setStatus(
+    childId: seoaId,
+    toothCode: 64,
+    status: ToothStatus.caries,
+    at: monthsAgo(1, 15),
+  );
+  await teeth.addEruptionEvent(
+    childId: seoaId,
+    toothCode: 81,
+    kind: ToothEventKind.lost,
+    date: monthsAgo(2, 4),
+  );
+  await teeth.addEruptionEvent(
+    childId: seoaId,
+    toothCode: 41,
+    kind: ToothEventKind.erupted,
+    date: monthsAgo(0, 1),
   );
 
   // 양치 기록: 지호는 최근 5일 연속 + 오늘 아침만, 서아는 띄엄띄엄.

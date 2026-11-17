@@ -9,6 +9,7 @@ import '../../shared/child_switcher.dart';
 import '../../shared/status_views.dart';
 import '../children/selected_child.dart';
 import '../home/tab_index.dart';
+import 'caries_trend_chart.dart';
 import 'tooth_painter.dart';
 import 'tooth_status_style.dart';
 
@@ -134,6 +135,8 @@ class _Chart extends ConsumerWidget {
             ),
             const SizedBox(height: 16),
             const _Legend(),
+            const SizedBox(height: 16),
+            CariesTrendCard(childId: childId),
             const SizedBox(height: 16),
             _EruptionLog(childId: childId),
           ],
