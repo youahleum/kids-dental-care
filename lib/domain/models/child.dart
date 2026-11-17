@@ -10,6 +10,7 @@ class Child {
     required this.birthDate,
     required this.colorValue,
     this.photoPath,
+    this.avatarEmoji,
     required this.createdAt,
   });
 
@@ -20,6 +21,9 @@ class Child {
   /// 프로필 색상 (ARGB int). 팔레트: AppColors.childPalette
   final int colorValue;
   final String? photoPath;
+
+  /// 아바타 이모지. null이면 이름 글자를 보여준다.
+  final String? avatarEmoji;
   final DateTime createdAt;
 
   Child copyWith({
@@ -34,7 +38,19 @@ class Child {
       birthDate: birthDate ?? this.birthDate,
       colorValue: colorValue ?? this.colorValue,
       photoPath: photoPath ?? this.photoPath,
+      avatarEmoji: avatarEmoji,
       createdAt: createdAt,
     );
   }
+
+  /// 아바타 이모지를 바꾼 사본 (null이면 이름 글자로 되돌림).
+  Child withAvatar(String? emoji) => Child(
+        id: id,
+        name: name,
+        birthDate: birthDate,
+        colorValue: colorValue,
+        photoPath: photoPath,
+        avatarEmoji: emoji,
+        createdAt: createdAt,
+      );
 }

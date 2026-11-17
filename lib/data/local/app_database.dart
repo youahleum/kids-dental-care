@@ -11,6 +11,9 @@ class Children extends Table {
   DateTimeColumn get birthDate => dateTime()();
   IntColumn get colorValue => integer()();
   TextColumn get photoPath => text().nullable()();
+
+  /// 아바타로 쓸 이모지. 없으면 이름 글자를 보여준다.
+  TextColumn get avatarEmoji => text().nullable()();
   DateTimeColumn get createdAt => dateTime()();
 }
 
@@ -117,7 +120,7 @@ class AppDatabase extends _$AppDatabase {
       : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 8;
+  int get schemaVersion => 9;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -149,6 +152,9 @@ class AppDatabase extends _$AppDatabase {
           if (from >= 3 && from < 8) {
             // v3 이전에서 오면 createTable(checkupRecords)이 이미 cost 포함으로 만든다.
             await m.addColumn(checkupRecords, checkupRecords.cost);
+          }
+          if (from < 9) {
+            await m.addColumn(children, children.avatarEmoji);
           }
         },
         beforeOpen: (details) async {

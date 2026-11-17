@@ -59,4 +59,26 @@ void main() {
     );
     await repo.add(name: 'X', birthDate: DateTime(2022, 1, 1), colorValue: 1);
   });
+
+  test('아바타 이모지: 저장·변경·이름 글자로 되돌리기', () async {
+    await repo.add(
+        name: '지호',
+        birthDate: DateTime(2024, 4, 12),
+        colorValue: 1,
+        avatarEmoji: '🐰');
+    var c = (await repo.getAll()).single;
+    expect(c.avatarEmoji, '🐰');
+
+    await repo.update(c.withAvatar('🦊'));
+    c = (await repo.getAll()).single;
+    expect(c.avatarEmoji, '🦊');
+
+    // 이름만 바꿔도 아바타는 유지된다.
+    await repo.update(c.copyWith(name: '지호야'));
+    c = (await repo.getAll()).single;
+    expect(c.avatarEmoji, '🦊');
+
+    await repo.update(c.withAvatar(null));
+    expect((await repo.getAll()).single.avatarEmoji, isNull);
+  });
 }

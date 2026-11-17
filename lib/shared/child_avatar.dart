@@ -12,6 +12,20 @@ class ChildAvatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = Color(child.colorValue);
+    final emoji = child.avatarEmoji;
+    if (emoji != null) {
+      return Container(
+        width: size,
+        height: size,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.25),
+          shape: BoxShape.circle,
+          border: Border.all(color: color, width: size * 0.05),
+        ),
+        child: Text(emoji, style: TextStyle(fontSize: size * 0.55, height: 1.1)),
+      );
+    }
     // 한국 이름은 첫 글자가 성이라 형제끼리 겹친다 → 이름(마지막 두 글자)을 표시.
     final chars = child.name.characters;
     final initial = chars.isEmpty

@@ -16,6 +16,7 @@ class ChildRepositoryImpl implements ChildRepository {
         birthDate: row.birthDate,
         colorValue: row.colorValue,
         photoPath: row.photoPath,
+        avatarEmoji: row.avatarEmoji,
         createdAt: row.createdAt,
       );
 
@@ -40,6 +41,7 @@ class ChildRepositoryImpl implements ChildRepository {
     required DateTime birthDate,
     required int colorValue,
     String? photoPath,
+    String? avatarEmoji,
   }) {
     return _db.into(_db.children).insert(
           ChildrenCompanion.insert(
@@ -47,6 +49,7 @@ class ChildRepositoryImpl implements ChildRepository {
             birthDate: birthDate,
             colorValue: colorValue,
             photoPath: Value(photoPath),
+            avatarEmoji: Value(avatarEmoji),
             createdAt: DateTime.now(),
           ),
         );
@@ -61,6 +64,7 @@ class ChildRepositoryImpl implements ChildRepository {
         birthDate: Value(child.birthDate),
         colorValue: Value(child.colorValue),
         photoPath: Value(child.photoPath),
+        avatarEmoji: Value(child.avatarEmoji),
       ),
     );
   }

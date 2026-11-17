@@ -48,6 +48,7 @@ class BackupService {
             'birthDate': _ms(c.birthDate),
             'colorValue': c.colorValue,
             'photoPath': c.photoPath,
+            'avatarEmoji': c.avatarEmoji,
             'createdAt': _ms(c.createdAt),
           },
       ],
@@ -141,6 +142,7 @@ class BackupService {
                 birthDate: _dt(c['birthDate'] as int),
                 colorValue: c['colorValue'] as int,
                 photoPath: Value(c['photoPath'] as String?),
+                avatarEmoji: Value(c['avatarEmoji'] as String?),
                 createdAt: _dt(c['createdAt'] as int),
               ),
             );

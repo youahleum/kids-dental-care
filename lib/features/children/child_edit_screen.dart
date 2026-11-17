@@ -25,6 +25,13 @@ class _ChildEditScreenState extends ConsumerState<ChildEditScreen> {
   late final TextEditingController _nameController;
   DateTime? _birthDate;
   late int _colorValue;
+  String? _emoji;
+
+  /// 고를 수 있는 아바타 이모지 (동물 + 가족).
+  static const _emojis = [
+    '🐰', '🐻', '🐱', '🐶', '🦊', '🐼', '🐯', '🦁', '🐵', '🐧', '🦄', '🐸',
+    '👧', '👦', '👩', '👨', '👵', '👴',
+  ];
 
   bool get _isEdit => widget.existing != null;
 
@@ -35,6 +42,7 @@ class _ChildEditScreenState extends ConsumerState<ChildEditScreen> {
     _nameController = TextEditingController(text: e?.name ?? '');
     _birthDate = e?.birthDate;
     _colorValue = e?.colorValue ?? AppColors.childPalette.first.toARGB32();
+    _emoji = e?.avatarEmoji;
   }
 
   @override
@@ -66,16 +74,19 @@ class _ChildEditScreenState extends ConsumerState<ChildEditScreen> {
     final repo = ref.read(childRepositoryProvider);
     final name = _nameController.text.trim();
     if (_isEdit) {
-      await repo.update(widget.existing!.copyWith(
-        name: name,
-        birthDate: _birthDate,
-        colorValue: _colorValue,
-      ));
+      await repo.update(widget.existing!
+          .copyWith(
+            name: name,
+            birthDate: _birthDate,
+            colorValue: _colorValue,
+          )
+          .withAvatar(_emoji));
     } else {
       final childId = await repo.add(
         name: name,
         birthDate: _birthDate!,
         colorValue: _colorValue,
+        avatarEmoji: _emoji,
       );
       // 생일 기준 예방치료·검진 타임라인 자동 생성 (PLAN.md 7장)
       final tasks = ScheduleEngine.generate(_birthDate!);
@@ -138,6 +149,43 @@ class _ChildEditScreenState extends ConsumerState<ChildEditScreen> {
                 ),
               ),
             ),
+            const SizedBox(height: 24),
+            const Text('아바타'),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                for (final e in <String?>[null, ..._emojis])
+                  GestureDetector(
+                    onTap: () => setState(() => _emoji = e),
+                    child: Container(
+                      width: 44,
+                      height: 44,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Color(_colorValue)
+                            .withValues(alpha: _emoji == e ? 0.3 : 0.1),
+                        border: Border.all(
+                          color: _emoji == e
+                              ? Color(_colorValue)
+                              : Colors.transparent,
+                          width: 2.5,
+                        ),
+                      ),
+                      child: Text(e ?? '가',
+                          style: TextStyle(
+                              fontSize: e == null ? 15 : 22,
+                              fontWeight: FontWeight.w700)),
+                    ),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 4),
+            Text("'가'를 고르면 이름 글자가 아바타로 보여요.",
+                style: TextStyle(
+                    fontSize: 12, color: Theme.of(context).hintColor)),
             const SizedBox(height: 24),
             const Text('프로필 색상'),
             const SizedBox(height: 8),

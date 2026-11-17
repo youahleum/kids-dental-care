@@ -24,6 +24,7 @@ Future<void> runDevSeed(AppDatabase db) async {
     name: '김지호',
     birthDate: jihoBirth,
     colorValue: 0xFF4DB6C4,
+    avatarEmoji: '🐰',
   );
   await taskRepo.createForChild(jihoId, ScheduleEngine.generate(jihoBirth));
   await checkupRepo.add(
@@ -61,6 +62,7 @@ Future<void> runDevSeed(AppDatabase db) async {
     name: '이수진',
     birthDate: momBirth,
     colorValue: 0xFF9575CD,
+    avatarEmoji: '👩',
   );
   await taskRepo.createForChild(momId, ScheduleEngine.generate(momBirth));
   await checkupRepo.add(

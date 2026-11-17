@@ -68,6 +68,17 @@ class $ChildrenTable extends Children
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _avatarEmojiMeta = const VerificationMeta(
+    'avatarEmoji',
+  );
+  @override
+  late final GeneratedColumn<String> avatarEmoji = GeneratedColumn<String>(
+    'avatar_emoji',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -86,6 +97,7 @@ class $ChildrenTable extends Children
     birthDate,
     colorValue,
     photoPath,
+    avatarEmoji,
     createdAt,
   ];
   @override
@@ -133,6 +145,15 @@ class $ChildrenTable extends Children
         photoPath.isAcceptableOrUnknown(data['photo_path']!, _photoPathMeta),
       );
     }
+    if (data.containsKey('avatar_emoji')) {
+      context.handle(
+        _avatarEmojiMeta,
+        avatarEmoji.isAcceptableOrUnknown(
+          data['avatar_emoji']!,
+          _avatarEmojiMeta,
+        ),
+      );
+    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -170,6 +191,10 @@ class $ChildrenTable extends Children
         DriftSqlType.string,
         data['${effectivePrefix}photo_path'],
       ),
+      avatarEmoji: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}avatar_emoji'],
+      ),
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -189,6 +214,9 @@ class ChildrenData extends DataClass implements Insertable<ChildrenData> {
   final DateTime birthDate;
   final int colorValue;
   final String? photoPath;
+
+  /// 아바타로 쓸 이모지. 없으면 이름 글자를 보여준다.
+  final String? avatarEmoji;
   final DateTime createdAt;
   const ChildrenData({
     required this.id,
@@ -196,6 +224,7 @@ class ChildrenData extends DataClass implements Insertable<ChildrenData> {
     required this.birthDate,
     required this.colorValue,
     this.photoPath,
+    this.avatarEmoji,
     required this.createdAt,
   });
   @override
@@ -207,6 +236,9 @@ class ChildrenData extends DataClass implements Insertable<ChildrenData> {
     map['color_value'] = Variable<int>(colorValue);
     if (!nullToAbsent || photoPath != null) {
       map['photo_path'] = Variable<String>(photoPath);
+    }
+    if (!nullToAbsent || avatarEmoji != null) {
+      map['avatar_emoji'] = Variable<String>(avatarEmoji);
     }
     map['created_at'] = Variable<DateTime>(createdAt);
     return map;
@@ -221,6 +253,9 @@ class ChildrenData extends DataClass implements Insertable<ChildrenData> {
       photoPath: photoPath == null && nullToAbsent
           ? const Value.absent()
           : Value(photoPath),
+      avatarEmoji: avatarEmoji == null && nullToAbsent
+          ? const Value.absent()
+          : Value(avatarEmoji),
       createdAt: Value(createdAt),
     );
   }
@@ -236,6 +271,7 @@ class ChildrenData extends DataClass implements Insertable<ChildrenData> {
       birthDate: serializer.fromJson<DateTime>(json['birthDate']),
       colorValue: serializer.fromJson<int>(json['colorValue']),
       photoPath: serializer.fromJson<String?>(json['photoPath']),
+      avatarEmoji: serializer.fromJson<String?>(json['avatarEmoji']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
     );
   }
@@ -248,6 +284,7 @@ class ChildrenData extends DataClass implements Insertable<ChildrenData> {
       'birthDate': serializer.toJson<DateTime>(birthDate),
       'colorValue': serializer.toJson<int>(colorValue),
       'photoPath': serializer.toJson<String?>(photoPath),
+      'avatarEmoji': serializer.toJson<String?>(avatarEmoji),
       'createdAt': serializer.toJson<DateTime>(createdAt),
     };
   }
@@ -258,6 +295,7 @@ class ChildrenData extends DataClass implements Insertable<ChildrenData> {
     DateTime? birthDate,
     int? colorValue,
     Value<String?> photoPath = const Value.absent(),
+    Value<String?> avatarEmoji = const Value.absent(),
     DateTime? createdAt,
   }) => ChildrenData(
     id: id ?? this.id,
@@ -265,6 +303,7 @@ class ChildrenData extends DataClass implements Insertable<ChildrenData> {
     birthDate: birthDate ?? this.birthDate,
     colorValue: colorValue ?? this.colorValue,
     photoPath: photoPath.present ? photoPath.value : this.photoPath,
+    avatarEmoji: avatarEmoji.present ? avatarEmoji.value : this.avatarEmoji,
     createdAt: createdAt ?? this.createdAt,
   );
   ChildrenData copyWithCompanion(ChildrenCompanion data) {
@@ -276,6 +315,9 @@ class ChildrenData extends DataClass implements Insertable<ChildrenData> {
           ? data.colorValue.value
           : this.colorValue,
       photoPath: data.photoPath.present ? data.photoPath.value : this.photoPath,
+      avatarEmoji: data.avatarEmoji.present
+          ? data.avatarEmoji.value
+          : this.avatarEmoji,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
     );
   }
@@ -288,14 +330,22 @@ class ChildrenData extends DataClass implements Insertable<ChildrenData> {
           ..write('birthDate: $birthDate, ')
           ..write('colorValue: $colorValue, ')
           ..write('photoPath: $photoPath, ')
+          ..write('avatarEmoji: $avatarEmoji, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, name, birthDate, colorValue, photoPath, createdAt);
+  int get hashCode => Object.hash(
+    id,
+    name,
+    birthDate,
+    colorValue,
+    photoPath,
+    avatarEmoji,
+    createdAt,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -305,6 +355,7 @@ class ChildrenData extends DataClass implements Insertable<ChildrenData> {
           other.birthDate == this.birthDate &&
           other.colorValue == this.colorValue &&
           other.photoPath == this.photoPath &&
+          other.avatarEmoji == this.avatarEmoji &&
           other.createdAt == this.createdAt);
 }
 
@@ -314,6 +365,7 @@ class ChildrenCompanion extends UpdateCompanion<ChildrenData> {
   final Value<DateTime> birthDate;
   final Value<int> colorValue;
   final Value<String?> photoPath;
+  final Value<String?> avatarEmoji;
   final Value<DateTime> createdAt;
   const ChildrenCompanion({
     this.id = const Value.absent(),
@@ -321,6 +373,7 @@ class ChildrenCompanion extends UpdateCompanion<ChildrenData> {
     this.birthDate = const Value.absent(),
     this.colorValue = const Value.absent(),
     this.photoPath = const Value.absent(),
+    this.avatarEmoji = const Value.absent(),
     this.createdAt = const Value.absent(),
   });
   ChildrenCompanion.insert({
@@ -329,6 +382,7 @@ class ChildrenCompanion extends UpdateCompanion<ChildrenData> {
     required DateTime birthDate,
     required int colorValue,
     this.photoPath = const Value.absent(),
+    this.avatarEmoji = const Value.absent(),
     required DateTime createdAt,
   }) : name = Value(name),
        birthDate = Value(birthDate),
@@ -340,6 +394,7 @@ class ChildrenCompanion extends UpdateCompanion<ChildrenData> {
     Expression<DateTime>? birthDate,
     Expression<int>? colorValue,
     Expression<String>? photoPath,
+    Expression<String>? avatarEmoji,
     Expression<DateTime>? createdAt,
   }) {
     return RawValuesInsertable({
@@ -348,6 +403,7 @@ class ChildrenCompanion extends UpdateCompanion<ChildrenData> {
       if (birthDate != null) 'birth_date': birthDate,
       if (colorValue != null) 'color_value': colorValue,
       if (photoPath != null) 'photo_path': photoPath,
+      if (avatarEmoji != null) 'avatar_emoji': avatarEmoji,
       if (createdAt != null) 'created_at': createdAt,
     });
   }
@@ -358,6 +414,7 @@ class ChildrenCompanion extends UpdateCompanion<ChildrenData> {
     Value<DateTime>? birthDate,
     Value<int>? colorValue,
     Value<String?>? photoPath,
+    Value<String?>? avatarEmoji,
     Value<DateTime>? createdAt,
   }) {
     return ChildrenCompanion(
@@ -366,6 +423,7 @@ class ChildrenCompanion extends UpdateCompanion<ChildrenData> {
       birthDate: birthDate ?? this.birthDate,
       colorValue: colorValue ?? this.colorValue,
       photoPath: photoPath ?? this.photoPath,
+      avatarEmoji: avatarEmoji ?? this.avatarEmoji,
       createdAt: createdAt ?? this.createdAt,
     );
   }
@@ -388,6 +446,9 @@ class ChildrenCompanion extends UpdateCompanion<ChildrenData> {
     if (photoPath.present) {
       map['photo_path'] = Variable<String>(photoPath.value);
     }
+    if (avatarEmoji.present) {
+      map['avatar_emoji'] = Variable<String>(avatarEmoji.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -402,6 +463,7 @@ class ChildrenCompanion extends UpdateCompanion<ChildrenData> {
           ..write('birthDate: $birthDate, ')
           ..write('colorValue: $colorValue, ')
           ..write('photoPath: $photoPath, ')
+          ..write('avatarEmoji: $avatarEmoji, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
         .toString();
@@ -2887,6 +2949,7 @@ typedef $$ChildrenTableCreateCompanionBuilder =
       required DateTime birthDate,
       required int colorValue,
       Value<String?> photoPath,
+      Value<String?> avatarEmoji,
       required DateTime createdAt,
     });
 typedef $$ChildrenTableUpdateCompanionBuilder =
@@ -2896,6 +2959,7 @@ typedef $$ChildrenTableUpdateCompanionBuilder =
       Value<DateTime> birthDate,
       Value<int> colorValue,
       Value<String?> photoPath,
+      Value<String?> avatarEmoji,
       Value<DateTime> createdAt,
     });
 
@@ -3027,6 +3091,11 @@ class $$ChildrenTableFilterComposer
 
   ColumnFilters<String> get photoPath => $composableBuilder(
     column: $table.photoPath,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get avatarEmoji => $composableBuilder(
+    column: $table.avatarEmoji,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -3195,6 +3264,11 @@ class $$ChildrenTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get avatarEmoji => $composableBuilder(
+    column: $table.avatarEmoji,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
@@ -3226,6 +3300,11 @@ class $$ChildrenTableAnnotationComposer
 
   GeneratedColumn<String> get photoPath =>
       $composableBuilder(column: $table.photoPath, builder: (column) => column);
+
+  GeneratedColumn<String> get avatarEmoji => $composableBuilder(
+    column: $table.avatarEmoji,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
@@ -3395,6 +3474,7 @@ class $$ChildrenTableTableManager
                 Value<DateTime> birthDate = const Value.absent(),
                 Value<int> colorValue = const Value.absent(),
                 Value<String?> photoPath = const Value.absent(),
+                Value<String?> avatarEmoji = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
               }) => ChildrenCompanion(
                 id: id,
@@ -3402,6 +3482,7 @@ class $$ChildrenTableTableManager
                 birthDate: birthDate,
                 colorValue: colorValue,
                 photoPath: photoPath,
+                avatarEmoji: avatarEmoji,
                 createdAt: createdAt,
               ),
           createCompanionCallback:
@@ -3411,6 +3492,7 @@ class $$ChildrenTableTableManager
                 required DateTime birthDate,
                 required int colorValue,
                 Value<String?> photoPath = const Value.absent(),
+                Value<String?> avatarEmoji = const Value.absent(),
                 required DateTime createdAt,
               }) => ChildrenCompanion.insert(
                 id: id,
@@ -3418,6 +3500,7 @@ class $$ChildrenTableTableManager
                 birthDate: birthDate,
                 colorValue: colorValue,
                 photoPath: photoPath,
+                avatarEmoji: avatarEmoji,
                 createdAt: createdAt,
               ),
           withReferenceMapper: (p0) => p0

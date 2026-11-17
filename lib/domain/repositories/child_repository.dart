@@ -14,6 +14,7 @@ abstract interface class ChildRepository {
     required DateTime birthDate,
     required int colorValue,
     String? photoPath,
+    String? avatarEmoji,
   });
 
   Future<void> update(Child child);
