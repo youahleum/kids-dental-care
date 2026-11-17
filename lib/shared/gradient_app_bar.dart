@@ -29,7 +29,8 @@ class GradientAppBar extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor: Colors.transparent,
       scrolledUnderElevation: 0,
       shape: const RoundedRectangleBorder(borderRadius: _radius),
-      flexibleSpace: DecoratedBox(
+      // Container는 자식이 없으면 영역을 가득 채운다 (DecoratedBox는 0 크기가 됨).
+      flexibleSpace: Container(
         decoration: BoxDecoration(
           borderRadius: _radius,
           gradient: LinearGradient(
