@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/router/app_router.dart';
@@ -16,6 +17,10 @@ class KidsDentalApp extends ConsumerWidget {
     return MaterialApp.router(
       title: '우리 가족 덴탈 관리',
       debugShowCheckedModeBanner: false,
+      // 날짜 선택 창 등 기본 제공 화면을 한국어로 보여준다.
+      locale: const Locale('ko', 'KR'),
+      supportedLocales: const [Locale('ko', 'KR')],
+      localizationsDelegates: GlobalMaterialLocalizations.delegates,
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
       themeMode: switch (mode) {
