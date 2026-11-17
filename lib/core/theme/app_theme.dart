@@ -79,6 +79,7 @@ abstract final class AppTheme {
 
     return ThemeData(
       useMaterial3: true,
+      fontFamily: 'Pretendard',
       brightness: p.brightness,
       colorScheme: scheme,
       scaffoldBackgroundColor: p.background,
@@ -88,6 +89,7 @@ abstract final class AppTheme {
         elevation: 0,
         centerTitle: false,
         titleTextStyle: const TextStyle(
+          fontFamily: 'Pretendard',
           fontSize: 20,
           fontWeight: FontWeight.w600,
           color: Colors.white,
@@ -156,6 +158,7 @@ abstract final class AppTheme {
         indicatorColor: const Color(0x264DB6C4),
         labelTextStyle: WidgetStateProperty.resolveWith(
           (states) => TextStyle(
+            fontFamily: 'Pretendard',
             fontSize: 12,
             fontWeight: states.contains(WidgetState.selected)
                 ? FontWeight.w700
