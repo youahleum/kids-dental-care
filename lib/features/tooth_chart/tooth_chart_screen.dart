@@ -363,7 +363,8 @@ class _Legend extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: toothStatusStyle(s).color,
                   shape: BoxShape.circle,
-                  border: Border.all(color: const Color(0xFFCFD8DC)),
+                  border: Border.all(
+                      color: Theme.of(context).colorScheme.outlineVariant),
                 ),
               ),
               const SizedBox(width: 6),

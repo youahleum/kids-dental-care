@@ -113,13 +113,15 @@ class _HomeHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [AppColors.mint, Color(0xFF6CC9D3)],
+          colors: Theme.of(context).brightness == Brightness.dark
+              ? const [Color(0xFF1F5F68), Color(0xFF2A7F8C)]
+              : const [AppColors.mint, Color(0xFF6CC9D3)],
         ),
-        borderRadius: BorderRadius.vertical(bottom: Radius.circular(28)),
+        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(28)),
       ),
       child: SafeArea(
         bottom: false,
@@ -293,7 +295,7 @@ class _Progress extends StatelessWidget {
           child: LinearProgressIndicator(
             value: stats.completionRate,
             minHeight: 8,
-            backgroundColor: const Color(0xFFEDF2F4),
+            backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
             color: color,
           ),
         ),
@@ -383,7 +385,9 @@ class _FamilyBrushingCard extends ConsumerWidget {
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
-                    color: all ? AppColors.statusDone : AppColors.mintDark,
+                    color: all
+                        ? AppColors.statusDone
+                        : Theme.of(context).colorScheme.tertiary,
                   ),
                 ),
               ],
@@ -394,7 +398,7 @@ class _FamilyBrushingCard extends ConsumerWidget {
               child: LinearProgressIndicator(
                 value: members.isEmpty ? 0 : done / members.length,
                 minHeight: 6,
-                backgroundColor: const Color(0xFFEDF2F4),
+                backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                 color: all ? AppColors.statusDone : AppColors.mint,
               ),
             ),
@@ -434,13 +438,14 @@ class _SummaryRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final dark = Theme.of(context).brightness == Brightness.dark;
     final next = stats.nextTask;
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
 
     Widget nextBadge;
     if (next == null) {
-      nextBadge = _pill('할 일 없음', AppColors.statusNeutral);
+      nextBadge = _pill('할 일 없음', AppColors.statusNeutral, dark);
     } else {
       final d = DateTime(next.recommendedDate.year, next.recommendedDate.month,
           next.recommendedDate.day);
@@ -450,7 +455,7 @@ class _SummaryRow extends StatelessWidget {
           : days == 0
               ? ('오늘', AppColors.statusUpcoming)
               : ('D-$days', AppColors.statusUpcoming);
-      nextBadge = _pill('${next.title} · $label', color);
+      nextBadge = _pill('${next.title} · $label', color, dark);
     }
 
     return Row(
@@ -458,17 +463,17 @@ class _SummaryRow extends StatelessWidget {
         Flexible(child: nextBadge),
         if (stats.overdueTasks > 0) ...[
           const SizedBox(width: 6),
-          _pill('놓친 일정 ${stats.overdueTasks}', AppColors.statusOverdue),
+          _pill('놓친 일정 ${stats.overdueTasks}', AppColors.statusOverdue, dark),
         ],
         if (stats.cariesCount > 0) ...[
           const SizedBox(width: 6),
-          _pill('충치 ${stats.cariesCount}', AppColors.toothCaries),
+          _pill('충치 ${stats.cariesCount}', AppColors.toothCaries, dark),
         ],
       ],
     );
   }
 
-  Widget _pill(String text, Color color) {
+  Widget _pill(String text, Color color, bool dark) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
@@ -480,14 +485,16 @@ class _SummaryRow extends StatelessWidget {
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
         style: TextStyle(
-            fontSize: 11, fontWeight: FontWeight.w600, color: _darken(color)),
+            fontSize: 11, fontWeight: FontWeight.w600, color: _ink(color, dark)),
       ),
     );
   }
 
-  Color _darken(Color c) {
+  /// 글자색: 밝은 모드는 어둡게, 어두운 모드는 밝게 해 옅은 배경 위 대비를 확보한다.
+  Color _ink(Color c, bool dark) {
     final hsl = HSLColor.fromColor(c);
-    return hsl.withLightness((hsl.lightness - 0.25).clamp(0.0, 1.0)).toColor();
+    final l = dark ? hsl.lightness + 0.15 : hsl.lightness - 0.25;
+    return hsl.withLightness(l.clamp(0.0, 1.0)).toColor();
   }
 }
 

@@ -88,8 +88,9 @@ class _Bubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isUser = message.isUser;
-    final bg = isUser ? AppColors.mint : AppColors.surface;
-    final fg = isUser ? Colors.white : Colors.black87;
+    final scheme = Theme.of(context).colorScheme;
+    final bg = isUser ? AppColors.mint : scheme.surface;
+    final fg = isUser ? Colors.white : scheme.onSurface;
 
     return Align(
       alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
@@ -107,7 +108,7 @@ class _Bubble extends StatelessWidget {
           ),
           border: isUser
               ? null
-              : Border.all(color: Colors.black.withValues(alpha: 0.06)),
+              : Border.all(color: scheme.outlineVariant),
         ),
         child: message.isLoading
             ? const _TypingDots()
@@ -214,7 +215,7 @@ class _InputBar extends StatelessWidget {
                 decoration: InputDecoration(
                   hintText: '궁금한 점을 물어보세요',
                   filled: true,
-                  fillColor: AppColors.background,
+                  fillColor: Theme.of(context).colorScheme.surfaceContainerLow,
                   contentPadding: const EdgeInsets.symmetric(
                       horizontal: 16, vertical: 10),
                   border: OutlineInputBorder(

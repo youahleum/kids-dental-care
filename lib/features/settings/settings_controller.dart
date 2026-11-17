@@ -39,6 +39,11 @@ class SettingsNotifier extends Notifier<AppSettings> {
     await _persist();
   }
 
+  Future<void> setThemeMode(AppThemeMode mode) async {
+    state = state.copyWith(themeMode: mode);
+    await _persist();
+  }
+
   Future<void> setBrushingReminderEnabled(bool v) async {
     state = state.copyWith(brushingReminderEnabled: v);
     await _persist();

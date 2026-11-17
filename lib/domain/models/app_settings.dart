@@ -1,5 +1,16 @@
 import 'package:flutter/foundation.dart';
 
+/// 화면 밝기 모드. 저장 시 인덱스를 쓰므로 순서를 바꾸지 말 것.
+enum AppThemeMode {
+  system('기기 설정 따르기'),
+  light('밝게'),
+  dark('어둡게');
+
+  const AppThemeMode(this.label);
+
+  final String label;
+}
+
 /// 앱 설정. 기준 문서: DESIGN.md 6-6
 @immutable
 class AppSettings {
@@ -10,6 +21,7 @@ class AppSettings {
     this.brushingReminderEnabled = false,
     this.morningBrushHour = 8,
     this.nightBrushHour = 21,
+    this.themeMode = AppThemeMode.system,
   });
 
   /// 알림 on/off.
@@ -30,6 +42,9 @@ class AppSettings {
   /// 자기 전 양치 알림 시각(시).
   final int nightBrushHour;
 
+  /// 화면 밝기 모드.
+  final AppThemeMode themeMode;
+
   AppSettings copyWith({
     bool? notificationsEnabled,
     int? notificationHour,
@@ -37,6 +52,7 @@ class AppSettings {
     bool? brushingReminderEnabled,
     int? morningBrushHour,
     int? nightBrushHour,
+    AppThemeMode? themeMode,
   }) {
     return AppSettings(
       notificationsEnabled: notificationsEnabled ?? this.notificationsEnabled,
@@ -47,6 +63,7 @@ class AppSettings {
           brushingReminderEnabled ?? this.brushingReminderEnabled,
       morningBrushHour: morningBrushHour ?? this.morningBrushHour,
       nightBrushHour: nightBrushHour ?? this.nightBrushHour,
+      themeMode: themeMode ?? this.themeMode,
     );
   }
 }

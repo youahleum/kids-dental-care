@@ -145,11 +145,12 @@ class BrushingToggle extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final scheme = Theme.of(context).colorScheme;
     final color = checked ? AppColors.mint : Theme.of(context).hintColor;
     return Material(
       color: checked
           ? AppColors.mint.withValues(alpha: 0.14)
-          : AppColors.background,
+          : scheme.surfaceContainerLow,
       borderRadius: BorderRadius.circular(large ? 16 : 20),
       child: InkWell(
         borderRadius: BorderRadius.circular(large ? 16 : 20),
@@ -165,7 +166,7 @@ class BrushingToggle extends ConsumerWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(large ? 16 : 20),
             border: Border.all(
-                color: checked ? AppColors.mint : const Color(0xFFE0E7EA)),
+                color: checked ? AppColors.mint : scheme.outlineVariant),
           ),
           child: Row(
             mainAxisSize: large ? MainAxisSize.max : MainAxisSize.min,
@@ -178,7 +179,7 @@ class BrushingToggle extends ConsumerWidget {
                 style: TextStyle(
                   fontSize: large ? 15 : 12,
                   fontWeight: FontWeight.w600,
-                  color: checked ? AppColors.mintDark : color,
+                  color: checked ? scheme.tertiary : color,
                 ),
               ),
               if (checked) ...[
@@ -318,7 +319,7 @@ class _DayCell extends ConsumerWidget {
           style: TextStyle(
               fontSize: 12,
               color: future
-                  ? const Color(0xFFCFD8DC)
+                  ? Theme.of(context).colorScheme.outlineVariant
                   : Theme.of(context).hintColor));
     }
 
@@ -328,10 +329,10 @@ class _DayCell extends ConsumerWidget {
         padding: const EdgeInsets.all(2),
         child: Material(
           color: perfect
-              ? const Color(0xFFFFF6D9)
+              ? const Color(0xFFFFC107).withValues(alpha: 0.18)
               : future
                   ? Colors.transparent
-                  : AppColors.background,
+                  : Theme.of(context).colorScheme.surfaceContainerLow,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
             side: isToday

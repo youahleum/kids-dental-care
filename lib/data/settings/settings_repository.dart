@@ -10,6 +10,7 @@ class SettingsRepository {
   static const _kBrushEnabled = 'brushing_reminder_enabled';
   static const _kMorningHour = 'morning_brush_hour';
   static const _kNightHour = 'night_brush_hour';
+  static const _kThemeMode = 'theme_mode';
 
   Future<AppSettings> load() async {
     final p = await SharedPreferences.getInstance();
@@ -20,6 +21,8 @@ class SettingsRepository {
       brushingReminderEnabled: p.getBool(_kBrushEnabled) ?? false,
       morningBrushHour: p.getInt(_kMorningHour) ?? 8,
       nightBrushHour: p.getInt(_kNightHour) ?? 21,
+      themeMode: AppThemeMode.values[(p.getInt(_kThemeMode) ?? 0)
+          .clamp(0, AppThemeMode.values.length - 1)],
     );
   }
 
@@ -31,5 +34,6 @@ class SettingsRepository {
     await p.setBool(_kBrushEnabled, s.brushingReminderEnabled);
     await p.setInt(_kMorningHour, s.morningBrushHour);
     await p.setInt(_kNightHour, s.nightBrushHour);
+    await p.setInt(_kThemeMode, s.themeMode.index);
   }
 }

@@ -136,7 +136,8 @@ class _TaskCard extends ConsumerWidget {
           padding: const EdgeInsets.all(12),
           child: Row(
             children: [
-              Icon(_iconFor(task.type), color: AppColors.mintDark),
+              Icon(_iconFor(task.type),
+                  color: Theme.of(context).colorScheme.tertiary),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -201,6 +202,9 @@ class _DisclaimerBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ink = Theme.of(context).brightness == Brightness.dark
+        ? const Color(0xFFFFCC80)
+        : const Color(0xFF8A5A00);
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(10),
@@ -210,14 +214,14 @@ class _DisclaimerBanner extends StatelessWidget {
         border: Border.all(
             color: AppColors.statusUpcoming.withValues(alpha: 0.4)),
       ),
-      child: const Row(
+      child: Row(
         children: [
-          Icon(Icons.info_outline, size: 16, color: Color(0xFF8A5A00)),
-          SizedBox(width: 8),
+          Icon(Icons.info_outline, size: 16, color: ink),
+          const SizedBox(width: 8),
           Expanded(
             child: Text(
               '실제 치료 시기는 치과 상담으로 결정하세요.',
-              style: TextStyle(fontSize: 12, color: Color(0xFF8A5A00)),
+              style: TextStyle(fontSize: 12, color: ink),
             ),
           ),
         ],

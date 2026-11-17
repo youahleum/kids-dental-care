@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/providers.dart';
 import '../clinics/clinics_screen.dart';
 import '../notifications/notification_controller.dart';
+import '../../domain/models/app_settings.dart';
 import '../../domain/models/brushing.dart';
 import 'settings_controller.dart';
 
@@ -126,6 +127,21 @@ class SettingsScreen extends ConsumerWidget {
                   .toList(),
               onChanged: (m) {
                 if (m != null) notifier.setCheckupIntervalMonths(m);
+              },
+            ),
+          ),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.dark_mode_outlined),
+            title: const Text('화면 모드'),
+            trailing: DropdownButton<AppThemeMode>(
+              value: settings.themeMode,
+              items: [
+                for (final m in AppThemeMode.values)
+                  DropdownMenuItem(value: m, child: Text(m.label)),
+              ],
+              onChanged: (m) {
+                if (m != null) notifier.setThemeMode(m);
               },
             ),
           ),
