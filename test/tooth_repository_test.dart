@@ -60,4 +60,43 @@ void main() {
     await childRepo.delete(childId);
     expect(await toothRepo.watchByChild(childId).first, isEmpty);
   });
+
+  test('상태를 바꿀 때마다 이력이 쌓인다', () async {
+    final childId = await addChild();
+    await toothRepo.setStatus(
+        childId: childId, toothCode: 55, status: ToothStatus.caries);
+    await toothRepo.setStatus(
+        childId: childId, toothCode: 55, status: ToothStatus.treated);
+    final events = await toothRepo.watchEvents(childId).first;
+    expect(events.map((e) => e.status),
+        [ToothStatus.caries, ToothStatus.treated]);
+    expect(events.every((e) => e.kind == ToothEventKind.statusChange), isTrue);
+  });
+
+  test('유치 빠짐 기록: 이력 추가 + 상태가 빠짐으로', () async {
+    final childId = await addChild();
+    await toothRepo.addEruptionEvent(
+        childId: childId,
+        toothCode: 81,
+        kind: ToothEventKind.lost,
+        date: DateTime(2026, 11, 3));
+    final events = await toothRepo.watchEvents(childId).first;
+    expect(events.where((e) => e.kind == ToothEventKind.lost), hasLength(1));
+    expect(events.first.date, DateTime(2026, 11, 3));
+    final teeth = await toothRepo.watchByChild(childId).first;
+    expect(teeth[81]!.status, ToothStatus.missing);
+  });
+
+  test('영구치 남 기록은 상태를 바꾸지 않고, 삭제할 수 있다', () async {
+    final childId = await addChild();
+    await toothRepo.addEruptionEvent(
+        childId: childId,
+        toothCode: 41,
+        kind: ToothEventKind.erupted,
+        date: DateTime(2026, 11, 10));
+    expect(await toothRepo.watchByChild(childId).first, isEmpty);
+    final e = (await toothRepo.watchEvents(childId).first).single;
+    await toothRepo.deleteEvent(e.id);
+    expect(await toothRepo.watchEvents(childId).first, isEmpty);
+  });
 }

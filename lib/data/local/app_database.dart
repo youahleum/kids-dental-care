@@ -87,6 +87,19 @@ class BrushingLogs extends Table {
       ];
 }
 
+/// 치아 이력 테이블. 상태 변경(충치 추이용)과 이갈이(빠짐·맹출)를 시간순으로 남긴다.
+/// kind는 [ToothEventKind] 인덱스, status는 상태 변경일 때만 [ToothStatus] 인덱스.
+@DataClassName('ToothEventRow')
+class ToothEvents extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get childId =>
+      integer().references(Children, #id, onDelete: KeyAction.cascade)();
+  IntColumn get toothCode => integer()();
+  IntColumn get kind => integer()();
+  IntColumn get status => integer().nullable()();
+  DateTimeColumn get date => dateTime()();
+}
+
 @DriftDatabase(tables: [
   Children,
   PreventiveTasks,
@@ -94,13 +107,14 @@ class BrushingLogs extends Table {
   ToothRecords,
   Clinics,
   BrushingLogs,
+  ToothEvents,
 ])
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor])
       : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 6;
+  int get schemaVersion => 7;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -120,6 +134,14 @@ class AppDatabase extends _$AppDatabase {
           }
           if (from < 6) {
             await m.createTable(brushingLogs);
+          }
+          if (from < 7) {
+            await m.createTable(toothEvents);
+            // 기존 치아 상태를 이력의 시작점으로 옮긴다(충치 추이가 비지 않도록).
+            await customStatement(
+              'INSERT INTO tooth_events (child_id, tooth_code, kind, status, date) '
+              'SELECT child_id, tooth_code, 0, status, updated_at FROM tooth_records',
+            );
           }
         },
         beforeOpen: (details) async {

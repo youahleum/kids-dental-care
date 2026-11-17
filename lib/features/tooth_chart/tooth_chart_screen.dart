@@ -134,6 +134,8 @@ class _Chart extends ConsumerWidget {
             ),
             const SizedBox(height: 16),
             const _Legend(),
+            const SizedBox(height: 16),
+            _EruptionLog(childId: childId),
           ],
         );
       },
@@ -265,7 +267,10 @@ class _Tooth extends ConsumerWidget {
   }
 
   Future<void> _openSheet(BuildContext context, WidgetRef ref) async {
-    final picked = await showModalBottomSheet<ToothStatus>(
+    final isPrimary = code ~/ 10 >= 5;
+    final eruptionKind =
+        isPrimary ? ToothEventKind.lost : ToothEventKind.erupted;
+    final picked = await showModalBottomSheet<Object>(
       context: context,
       builder: (_) => SafeArea(
         child: Column(
@@ -283,16 +288,42 @@ class _Tooth extends ConsumerWidget {
                 selected: s == status,
                 onTap: () => Navigator.pop(context, s),
               ),
+            const Divider(height: 1),
+            ListTile(
+              leading: Text(isPrimary ? '🦷' : '✨',
+                  style: const TextStyle(fontSize: 20)),
+              title: Text(isPrimary ? '빠진 날 기록 (이갈이)' : '난 날 기록'),
+              subtitle: Text(isPrimary
+                  ? '빠진 날짜를 남기면 상태가 \'빠짐\'으로 바뀌어요.'
+                  : '영구치가 올라온 날짜를 남겨요.'),
+              onTap: () => Navigator.pop(context, eruptionKind),
+            ),
           ],
         ),
       ),
     );
-    if (picked != null) {
+    if (picked is ToothStatus) {
       await ref.read(toothRepositoryProvider).setStatus(
             childId: childId,
             toothCode: code,
             status: picked,
           );
+    } else if (picked is ToothEventKind && context.mounted) {
+      final date = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime(2000),
+        lastDate: DateTime.now(),
+        helpText: picked == ToothEventKind.lost ? '빠진 날' : '난 날',
+      );
+      if (date != null) {
+        await ref.read(toothRepositoryProvider).addEruptionEvent(
+              childId: childId,
+              toothCode: code,
+              kind: picked,
+              date: date,
+            );
+      }
     }
   }
 
@@ -338,6 +369,75 @@ class _Legend extends StatelessWidget {
             ],
           ),
       ],
+    );
+  }
+}
+
+/// 이갈이 기록: 유치가 빠진 날·영구치가 난 날 목록.
+class _EruptionLog extends ConsumerWidget {
+  const _EruptionLog({required this.childId});
+
+  final int childId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final events = (ref.watch(toothEventsProvider(childId)).valueOrNull ??
+            const <ToothEvent>[])
+        .where((e) => e.kind != ToothEventKind.statusChange)
+        .toList()
+        .reversed
+        .toList();
+    final lost = events.where((e) => e.kind == ToothEventKind.lost).length;
+    final erupted = events.length - lost;
+    final hint = Theme.of(context).hintColor;
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 16, 8, 8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Text('이갈이 기록',
+                    style:
+                        TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+                const Spacer(),
+                Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: Text('유치 빠짐 $lost · 영구치 남 $erupted',
+                      style: TextStyle(fontSize: 12, color: hint)),
+                ),
+              ],
+            ),
+            const SizedBox(height: 4),
+            if (events.isEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                child: Text('치아를 누르고 \'빠진 날 기록\'이나 \'난 날 기록\'을 선택해 보세요.',
+                    style: TextStyle(fontSize: 12, color: hint)),
+              )
+            else
+              for (final e in events)
+                ListTile(
+                  dense: true,
+                  contentPadding: EdgeInsets.zero,
+                  leading: Text(e.kind == ToothEventKind.lost ? '🦷' : '✨',
+                      style: const TextStyle(fontSize: 18)),
+                  title: Text(
+                      '${ToothLayout.label(e.toothCode)} ${e.kind.label}'),
+                  subtitle: Text(
+                      '${e.date.year}.${e.date.month}.${e.date.day}'),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.delete_outline, size: 20),
+                    tooltip: '기록 삭제',
+                    onPressed: () =>
+                        ref.read(toothRepositoryProvider).deleteEvent(e.id),
+                  ),
+                ),
+          ],
+        ),
+      ),
     );
   }
 }

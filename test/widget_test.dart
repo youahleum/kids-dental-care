@@ -22,6 +22,7 @@ Widget _app(List<Child> children) {
       toothChartProvider
           .overrideWith((ref, childId) => Stream.value(const <int, ToothRecord>{})),
       brushingLogsProvider.overrideWith((ref, childId) => Stream.value(const {})),
+      toothEventsProvider.overrideWith((ref, childId) => Stream.value(const [])),
       // 알림 재예약이 진짜 DB/플랫폼을 태우지 않도록 차단한다.
       notificationServiceProvider.overrideWithValue(NoopNotificationService()),
       initialSettingsProvider

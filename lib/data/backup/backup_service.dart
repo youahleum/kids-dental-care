@@ -25,6 +25,7 @@ class BackupService {
     final teeth = await _db.select(_db.toothRecords).get();
     final clinics = await _db.select(_db.clinics).get();
     final brushing = await _db.select(_db.brushingLogs).get();
+    final toothEvents = await _db.select(_db.toothEvents).get();
 
     return {
       'formatVersion': formatVersion,
@@ -94,6 +95,17 @@ class BackupService {
             'slot': b.slot,
           },
       ],
+      'toothEvents': [
+        for (final e in toothEvents)
+          {
+            'id': e.id,
+            'childId': e.childId,
+            'toothCode': e.toothCode,
+            'kind': e.kind,
+            'status': e.status,
+            'date': _ms(e.date),
+          },
+      ],
     };
   }
 
@@ -112,6 +124,7 @@ class BackupService {
     await _db.transaction(() async {
       // FK cascade 순서 상관없이 안전하게 자식부터 삭제.
       await _db.delete(_db.brushingLogs).go();
+      await _db.delete(_db.toothEvents).go();
       await _db.delete(_db.toothRecords).go();
       await _db.delete(_db.checkupRecords).go();
       await _db.delete(_db.preventiveTasks).go();
@@ -205,6 +218,21 @@ class BackupService {
                 childId: b['childId'] as int,
                 date: _dt(b['date'] as int),
                 slot: b['slot'] as int,
+              ),
+            );
+      }
+
+      final toothEvents = (data['toothEvents'] as List? ?? const [])
+          .cast<Map<String, dynamic>>();
+      for (final e in toothEvents) {
+        await _db.into(_db.toothEvents).insert(
+              ToothEventsCompanion.insert(
+                id: Value(e['id'] as int),
+                childId: e['childId'] as int,
+                toothCode: e['toothCode'] as int,
+                kind: e['kind'] as int,
+                status: Value(e['status'] as int?),
+                date: _dt(e['date'] as int),
               ),
             );
       }

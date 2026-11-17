@@ -67,6 +67,7 @@ void main() {
         'teeth': (await db.select(db.toothRecords).get()).length,
         'clinics': (await db.select(db.clinics).get()).length,
         'brushing': (await db.select(db.brushingLogs).get()).length,
+        'toothEvents': (await db.select(db.toothEvents).get()).length,
       };
 
   test('export → import 라운드트립: 데이터가 동일하게 복원된다', () async {

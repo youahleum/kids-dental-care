@@ -9,6 +9,39 @@ enum ToothStatus {
   missing, // 빠짐/미맹출
 }
 
+/// 치아 이력 종류. DB에 인덱스로 저장되므로 순서를 바꾸지 말 것.
+enum ToothEventKind {
+  statusChange('상태 변경'), // 충치·치료 등 상태가 바뀜
+  lost('빠짐'), // 유치가 빠짐
+  erupted('남'); // 영구치가 남
+
+  const ToothEventKind(this.label);
+
+  final String label;
+}
+
+/// 치아 이력 1건.
+@immutable
+class ToothEvent {
+  const ToothEvent({
+    required this.id,
+    required this.childId,
+    required this.toothCode,
+    required this.kind,
+    this.status,
+    required this.date,
+  });
+
+  final int id;
+  final int childId;
+  final int toothCode;
+  final ToothEventKind kind;
+
+  /// [ToothEventKind.statusChange]일 때 바뀐 뒤 상태.
+  final ToothStatus? status;
+  final DateTime date;
+}
+
 /// 치아별 상태 기록. 기준 문서: PLAN.md 6장
 /// [toothCode]는 FDI 표기 (유치 51~85, 영구치 11~48).
 @immutable

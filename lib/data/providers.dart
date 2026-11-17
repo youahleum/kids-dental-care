@@ -122,3 +122,9 @@ final brushingStatsProvider =
   final logs = ref.watch(brushingLogsProvider(childId)).valueOrNull ?? const {};
   return BrushingStats.compute(logs);
 });
+
+/// 특정 구성원의 치아 이력(상태 변경·이갈이) 실시간 스트림.
+final toothEventsProvider =
+    StreamProvider.family<List<ToothEvent>, int>((ref, childId) {
+  return ref.watch(toothRepositoryProvider).watchEvents(childId);
+});

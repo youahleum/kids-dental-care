@@ -27,13 +27,72 @@ class ToothRepositoryImpl implements ToothRepository {
         });
   }
 
+  ToothEvent _toEvent(ToothEventRow r) => ToothEvent(
+        id: r.id,
+        childId: r.childId,
+        toothCode: r.toothCode,
+        kind: ToothEventKind.values[r.kind],
+        status: r.status == null ? null : ToothStatus.values[r.status!],
+        date: r.date,
+      );
+
+  @override
+  Stream<List<ToothEvent>> watchEvents(int childId) {
+    final query = _db.select(_db.toothEvents)
+      ..where((t) => t.childId.equals(childId))
+      ..orderBy([
+        (t) => OrderingTerm(expression: t.date),
+        (t) => OrderingTerm(expression: t.id),
+      ]);
+    return query.watch().map((rows) => rows.map(_toEvent).toList());
+  }
+
+  @override
+  Future<void> addEruptionEvent({
+    required int childId,
+    required int toothCode,
+    required ToothEventKind kind,
+    required DateTime date,
+  }) async {
+    assert(kind != ToothEventKind.statusChange);
+    await _db.transaction(() async {
+      await _db.into(_db.toothEvents).insert(ToothEventsCompanion.insert(
+            childId: childId,
+            toothCode: toothCode,
+            kind: kind.index,
+            date: date,
+          ));
+      if (kind == ToothEventKind.lost) {
+        await setStatus(
+            childId: childId,
+            toothCode: toothCode,
+            status: ToothStatus.missing,
+            at: date);
+      }
+    });
+  }
+
+  @override
+  Future<void> deleteEvent(int id) =>
+      (_db.delete(_db.toothEvents)..where((t) => t.id.equals(id))).go();
+
   @override
   Future<void> setStatus({
     required int childId,
     required int toothCode,
     required ToothStatus status,
     String? note,
+    DateTime? at,
   }) async {
+    final now = at ?? DateTime.now();
+    await _db.into(_db.toothEvents).insert(ToothEventsCompanion.insert(
+          childId: childId,
+          toothCode: toothCode,
+          kind: ToothEventKind.statusChange.index,
+          status: Value(status.index),
+          date: now,
+        ));
+
     final delete = _db.delete(_db.toothRecords)
       ..where((t) => t.childId.equals(childId) & t.toothCode.equals(toothCode));
 
@@ -51,13 +110,13 @@ class ToothRepositoryImpl implements ToothRepository {
             toothCode: toothCode,
             status: status.index,
             note: Value(note),
-            updatedAt: DateTime.now(),
+            updatedAt: now,
           ),
           onConflict: DoUpdate(
             (old) => ToothRecordsCompanion.custom(
               status: Variable(status.index),
               note: Variable(note),
-              updatedAt: Variable(DateTime.now()),
+              updatedAt: Variable(now),
             ),
             target: [_db.toothRecords.childId, _db.toothRecords.toothCode],
           ),
