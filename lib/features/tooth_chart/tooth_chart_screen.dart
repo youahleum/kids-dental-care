@@ -183,8 +183,12 @@ class _Arch extends StatelessWidget {
       }
       final arcLen = cum.last;
 
-      double baseWidth(int code) =>
-          ToothLayout.kind(code) == ToothKind.molar ? 28.0 : 20.0;
+      // 종류별 폭: 어금니 > 작은어금니 > 앞니·송곳니.
+      double baseWidth(int code) => switch (ToothLayout.kind(code)) {
+            ToothKind.molar => 28.0,
+            ToothKind.premolar => 23.0,
+            _ => 20.0,
+          };
       final needed = codes.fold<double>(0, (sum, code) => sum + baseWidth(code)) +
           _gap * (codes.length - 1);
       // 호에 딱 맞게 줄이되, 유치처럼 여유가 있으면 조금만 키운다.

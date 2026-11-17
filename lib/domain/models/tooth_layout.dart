@@ -74,21 +74,25 @@ abstract final class ToothLayout {
     };
   }
 
-  /// 치아 아래 표기할 짧은 이름. 앞니 / 송곳니 / 어금니.
+  /// 치아 아래 표기할 짧은 이름. 앞니 / 송곳니 / 작은어금니 / 어금니.
   static String shortMark(int code) => switch (kind(code)) {
         ToothKind.incisor => '앞니',
         ToothKind.canine => '송곳니',
+        ToothKind.premolar => '작은어금니',
         ToothKind.molar => '어금니',
       };
 
-  /// 형태 분류 (모양 렌더용). 앞니 / 송곳니 / 어금니.
+  /// 형태 분류 (모양 렌더용). 앞니 / 송곳니 / 작은어금니(소구치) / 어금니(대구치).
+  /// 작은어금니는 영구치 4·5번뿐이다 (유치 4·5번은 어금니).
   static ToothKind kind(int code) {
     final pos = code % 10;
+    final isPrimary = code ~/ 10 >= 5;
     if (pos <= 2) return ToothKind.incisor;
     if (pos == 3) return ToothKind.canine;
+    if (!isPrimary && pos <= 5) return ToothKind.premolar;
     return ToothKind.molar;
   }
 }
 
 /// 치아 형태 분류.
-enum ToothKind { incisor, canine, molar }
+enum ToothKind { incisor, canine, premolar, molar }

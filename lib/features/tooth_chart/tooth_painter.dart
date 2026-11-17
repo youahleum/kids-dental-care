@@ -22,6 +22,7 @@ class ToothPainter extends CustomPainter {
     final path = switch (kind) {
       ToothKind.incisor => _incisor(w, h),
       ToothKind.canine => _canine(w, h),
+      ToothKind.premolar => _premolar(w, h),
       ToothKind.molar => _molar(w, h),
     };
     // 바닥 그림자 → 입체감.
@@ -81,6 +82,26 @@ class ToothPainter extends CustomPainter {
       ..quadraticBezierTo(w * 0.72, h * 0.94, w * 0.5, h)
       ..quadraticBezierTo(w * 0.28, h * 0.94, w * 0.18, crownBot)
       ..quadraticBezierTo(w * 0.1, h * 0.18, w * 0.5, 0)
+      ..close();
+  }
+
+  /// 작은어금니(소구치): 얕게 갈라진 작은 혹 2개 크라운 + 한 갈래 뿌리.
+  /// 어금니보다 좁고, 뿌리가 갈라지지 않아 한눈에 구분된다.
+  Path _premolar(double w, double h) {
+    final crownBot = h * 0.52;
+    return Path()
+      // 왼쪽 혹
+      ..moveTo(w * 0.10, h * 0.27)
+      ..quadraticBezierTo(w * 0.10, h * 0.03, w * 0.33, h * 0.05)
+      // 가운데 얕은 홈
+      ..quadraticBezierTo(w * 0.46, h * 0.07, w * 0.5, h * 0.13)
+      // 오른쪽 혹
+      ..quadraticBezierTo(w * 0.54, h * 0.07, w * 0.67, h * 0.05)
+      ..quadraticBezierTo(w * 0.90, h * 0.03, w * 0.90, h * 0.27)
+      ..lineTo(w * 0.83, crownBot)
+      // 한 갈래 뿌리 (아래로 좁아짐)
+      ..quadraticBezierTo(w * 0.74, h * 0.93, w * 0.5, h)
+      ..quadraticBezierTo(w * 0.26, h * 0.93, w * 0.17, crownBot)
       ..close();
   }
 
