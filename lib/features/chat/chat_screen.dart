@@ -93,13 +93,35 @@ class _Bubble extends StatelessWidget {
     final bg = isUser ? AppColors.mint : scheme.surface;
     final fg = isUser ? Colors.white : scheme.onSurface;
 
+    final bubble = _bubble(context, scheme, bg, fg, isUser);
+    if (isUser) {
+      return Align(alignment: Alignment.centerRight, child: bubble);
+    }
+    // 상담 답변: 치아 캐릭터 얼굴을 말풍선 왼쪽에 붙인다.
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(right: 8, bottom: 4),
+          child: ClipOval(
+            child: Image.asset('assets/icon/app_icon.png',
+                width: 34, height: 34),
+          ),
+        ),
+        Flexible(child: bubble),
+      ],
+    );
+  }
+
+  Widget _bubble(BuildContext context, ColorScheme scheme, Color bg, Color fg,
+      bool isUser) {
     return Align(
       alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 4),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         constraints: BoxConstraints(
-          maxWidth: MediaQuery.of(context).size.width * 0.78,
+          maxWidth: MediaQuery.of(context).size.width * (isUser ? 0.78 : 0.72),
         ),
         decoration: BoxDecoration(
           color: bg,
