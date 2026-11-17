@@ -25,8 +25,8 @@ class ChatController extends StateNotifier<List<ChatMessage>> {
       : super(const [
           ChatMessage(
             role: ChatRole.assistant,
-            text: '안녕하세요! 우리 아이 치아 관리에 대해 궁금한 점을 물어봐 주세요. '
-                '아이의 나이와 기록을 참고해 답변드려요.',
+            text: '안녕하세요! 우리 가족 치아 관리에 대해 궁금한 점을 물어봐 주세요. '
+                '선택한 가족의 나이와 기록을 참고해 답변드려요.',
           ),
         ]);
 
@@ -54,7 +54,7 @@ class ChatController extends StateNotifier<List<ChatMessage>> {
 
       // 3) LLM 호출(지금은 Mock).
       final answer = context == null
-          ? '먼저 홈에서 아이를 등록해 주세요. 등록하면 그 아이에 맞춰 답변드릴 수 있어요.'
+          ? '먼저 홈에서 가족을 등록해 주세요. 등록하면 그 사람에 맞춰 답변드릴 수 있어요.'
           : await service.ask(text, context);
 
       // 4) 로딩 자리표시를 실제 답변으로 교체.
@@ -75,7 +75,7 @@ class ChatController extends StateNotifier<List<ChatMessage>> {
     }
   }
 
-  /// 현재 선택된 아이의 앱 데이터를 모아 LLM 컨텍스트로 만든다.
+  /// 현재 선택된 구성원의 앱 데이터를 모아 LLM 컨텍스트로 만든다.
   DentalChatContext? _buildContext() {
     final Child? child = _ref.read(selectedChildProvider);
     if (child == null) return null;

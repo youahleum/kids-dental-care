@@ -99,8 +99,10 @@ class _TimelineList extends ConsumerWidget {
     final pending =
         all.where((t) => t.status != TaskStatus.done).toList();
     if (pending.isEmpty) return null;
+    // 오늘 날짜(0시) 기준 — 현재 시각과 비교하면 '오늘' 항목이 빠진다.
     final now = DateTime.now();
-    final upcoming = pending.where((t) => !t.recommendedDate.isBefore(now)).toList()
+    final today = DateTime(now.year, now.month, now.day);
+    final upcoming = pending.where((t) => !t.recommendedDate.isBefore(today)).toList()
       ..sort((a, b) => a.recommendedDate.compareTo(b.recommendedDate));
     if (upcoming.isNotEmpty) return upcoming.first;
     // 모두 지난 경우 가장 최근에 지난 것
@@ -167,6 +169,7 @@ class _TaskCard extends ConsumerWidget {
         PreventiveType.checkup => Icons.medical_services_outlined,
         PreventiveType.fluoride => Icons.water_drop_outlined,
         PreventiveType.sealant => Icons.shield_outlined,
+        PreventiveType.scaling => Icons.cleaning_services_outlined,
       };
 }
 

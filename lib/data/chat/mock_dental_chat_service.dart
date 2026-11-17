@@ -1,13 +1,15 @@
 import 'dart:math';
 
+import '../../core/utils/age_utils.dart';
 import '../../domain/models/preventive_task.dart';
+import '../../domain/services/schedule_engine.dart';
 import '../../domain/services/dental_chat_service.dart';
 
 /// ─────────────────────────────────────────────────────────────────────
 /// ★ 학습 포인트 3 — Mock 구현
 ///
 /// 진짜 Claude API 없이도 "LLM이 있는 것처럼" 동작시키는 가짜 구현.
-/// 키워드 규칙 + 아이의 실제 컨텍스트를 조합해 그럴듯한 답을 만든다.
+/// 키워드 규칙 + 구성원의 실제 컨텍스트를 조합해 그럴듯한 답을 만든다.
 ///
 /// 진짜 API로 바꿀 때 할 일은 딱 하나:
 ///   class ClaudeDentalChatService implements DentalChatService {
@@ -36,6 +38,8 @@ class MockDentalChatService implements DentalChatService {
 
     final q = question.toLowerCase();
     final name = context.child.name;
+    final isAdult =
+        AgeUtils.years(context.child.birthDate) >= ScheduleEngine.adultAge;
 
     // 미완료 중 가장 임박한 항목(컨텍스트 활용 예시).
     final pending = context.tasks
@@ -54,9 +58,15 @@ class MockDentalChatService implements DentalChatService {
     } else if (_has(q, ['충치', '썩', '아파', '아프'])) {
       body = '충치가 의심되면 방치할수록 진행이 빨라 조기 진료가 중요합니다. '
           '$name(이)의 치아차트에 기록해 두고, 가까운 시일에 검진을 받아보시길 권해요.';
+    } else if (_has(q, ['스케일링', '치석'])) {
+      body = '스케일링은 만 19세 이상이면 건강보험으로 1년에 한 번 받을 수 있어요(매년 1월 초기화). '
+          '잇몸 질환 예방에 효과적이니 정기검진 때 함께 받는 것을 권해요.';
     } else if (_has(q, ['양치', '칫솔', '이닦', '이 닦'])) {
-      body = '이 시기 아이는 스스로 닦기 어려워, 보호자가 마무리 양치를 도와주는 것이 좋습니다. '
-          '불소치약을 쌀알~콩알 크기로 사용하고 하루 2회, 자기 전 양치를 꼭 챙겨주세요.';
+      body = isAdult
+          ? '하루 2회 이상, 2분씩 잇몸 쪽까지 꼼꼼히 닦아 주세요. '
+              '치실·치간칫솔로 치아 사이를 하루 한 번 관리하면 잇몸 질환 예방에 큰 도움이 됩니다.'
+          : '이 시기 아이는 스스로 닦기 어려워, 보호자가 마무리 양치를 도와주는 것이 좋습니다. '
+              '불소치약을 쌀알~콩알 크기로 사용하고 하루 2회, 자기 전 양치를 꼭 챙겨주세요.';
     } else if (_has(q, ['검진', '언제', '예약', '다음'])) {
       body = next != null
           ? '$name(이)의 다음 권장 항목은 "${next.title}"입니다. '
@@ -64,7 +74,7 @@ class MockDentalChatService implements DentalChatService {
           : '$name(이)은 예정된 미완료 항목이 없어요. 보통 6개월마다 정기검진을 권장합니다.';
     } else {
       body = '$name(이)의 현재 상황을 바탕으로 도와드릴게요. '
-          '불소도포, 실란트, 양치 습관, 다음 검진 시기 등 궁금한 점을 물어봐 주세요.';
+          '불소도포, 실란트, 스케일링, 양치 습관, 다음 검진 시기 등 궁금한 점을 물어봐 주세요.';
       if (next != null) {
         body += ' 참고로 다음 권장 항목은 "${next.title}"입니다.';
       }

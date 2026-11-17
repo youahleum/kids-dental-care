@@ -7,7 +7,7 @@ import '../children/selected_child.dart';
 import 'chat_controller.dart';
 import 'chat_message.dart';
 
-/// AI 치아 상담 챗봇. 아이의 나이·기록을 컨텍스트로 개인화 답변을 준다.
+/// AI 치아 상담 챗봇. 구성원의 나이·기록을 컨텍스트로 개인화 답변을 준다.
 class ChatScreen extends ConsumerStatefulWidget {
   const ChatScreen({super.key});
 
@@ -22,7 +22,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   static const _suggestions = [
     '불소도포 꼭 해야 하나요?',
     '다음 검진은 언제인가요?',
-    '양치는 어떻게 도와주나요?',
+    '양치는 어떻게 하나요?',
+    '스케일링은 얼마나 자주 받나요?',
     '실란트는 언제 하나요?',
   ];
 

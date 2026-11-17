@@ -15,7 +15,7 @@ import '../children/selected_child.dart';
 import '../settings/settings_screen.dart';
 import 'tab_index.dart';
 
-/// 홈 · 자녀 선택. 기준: DESIGN.md 6-1
+/// 홈 · 가족 구성원 선택. 기준: DESIGN.md 6-1
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
@@ -31,7 +31,7 @@ class HomeScreen extends ConsumerWidget {
       context: context,
       builder: (_) => AlertDialog(
         title: Text('${child.name} 삭제'),
-        content: const Text('이 자녀의 모든 기록이 삭제됩니다. 계속할까요?'),
+        content: const Text('이 구성원의 모든 기록이 삭제됩니다. 계속할까요?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -58,7 +58,7 @@ class HomeScreen extends ConsumerWidget {
         heroTag: 'home-fab',
         onPressed: () => _openEdit(context),
         icon: const Icon(Icons.add),
-        label: const Text('자녀 추가'),
+        label: const Text('가족 추가'),
       ),
       body: Column(
         children: [
@@ -146,7 +146,7 @@ class _HomeHeader extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      '우리 아이 치아',
+                      '우리 가족 덴탈 관리',
                       style: TextStyle(
                           color: Colors.white,
                           fontSize: 22,
@@ -347,7 +347,7 @@ class _BrushingRow extends ConsumerWidget {
   }
 }
 
-/// 자녀 카드 하단 요약: 다음 할 일 + 완료율 + 충치 경고.
+/// 구성원 카드 하단 요약: 다음 할 일 + 완료율 + 충치 경고.
 class _SummaryRow extends StatelessWidget {
   const _SummaryRow({required this.stats});
 
@@ -429,12 +429,12 @@ class _EmptyState extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             const Text(
-              '첫 아이를 등록해 주세요',
+              '가족을 등록해 주세요',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 8),
             Text(
-              '생년월일만 입력하면 나이에 맞는 검진·예방치료 일정을 자동으로 챙겨드려요.',
+              '아이부터 어른까지, 생년월일만 입력하면 나이에 맞는 검진·스케일링·예방치료 일정을 챙겨드려요.',
               textAlign: TextAlign.center,
               style: TextStyle(color: Theme.of(context).hintColor),
             ),
@@ -443,7 +443,7 @@ class _EmptyState extends StatelessWidget {
               onPressed: () => Navigator.of(context).push(
                 MaterialPageRoute(builder: (_) => const ChildEditScreen()),
               ),
-              child: const Text('자녀 추가하기'),
+              child: const Text('가족 추가하기'),
             ),
           ],
         ),

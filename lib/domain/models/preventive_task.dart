@@ -6,12 +6,13 @@ enum PreventiveType {
   checkup, // 국가 구강검진 / 정기검진
   fluoride, // 불소도포
   sealant, // 실란트(치아홈메우기)
+  scaling, // 스케일링 (어른, 연 1회) — DB에 인덱스로 저장되므로 항상 맨 뒤에 추가
 }
 
 /// 항목 상태.
 enum TaskStatus { pending, done, skipped }
 
-/// 자녀별 예방치료/검진 항목 (시드 템플릿 → 자녀 인스턴스).
+/// 구성원별 예방치료/검진 항목 (시드 템플릿 → 구성원 인스턴스).
 /// 기준 문서: PLAN.md 3장(도메인 지식), 6장(데이터 모델)
 @immutable
 class PreventiveTask {

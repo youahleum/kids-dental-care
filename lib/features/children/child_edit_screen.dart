@@ -8,7 +8,7 @@ import '../../data/providers.dart';
 import '../../domain/models/child.dart';
 import '../../domain/services/schedule_engine.dart';
 
-/// 자녀 등록/편집 화면. 기준: DESIGN.md 6-2
+/// 가족 구성원 등록/편집 화면. 기준: DESIGN.md 6-2
 class ChildEditScreen extends ConsumerStatefulWidget {
   const ChildEditScreen({super.key, this.existing});
 
@@ -92,7 +92,7 @@ class _ChildEditScreenState extends ConsumerState<ChildEditScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isEdit ? '자녀 편집' : '자녀 추가'),
+        title: Text(_isEdit ? '가족 편집' : '가족 추가'),
         actions: [
           TextButton(
             onPressed: _save,
@@ -174,7 +174,7 @@ class _ChildEditScreenState extends ConsumerState<ChildEditScreen> {
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: _save,
-              child: Text(_isEdit ? '저장' : '자녀 추가하기'),
+              child: Text(_isEdit ? '저장' : '가족 추가하기'),
             ),
           ],
         ),

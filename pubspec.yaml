@@ -1,5 +1,5 @@
 name: kids_dental_care
-description: "아이들의 치아 건강을 관리하는 Flutter 앱 — 연령별 예방치료 안내, 검진 이력, 로컬 알림."
+description: "아이부터 어른까지 가족 치아 관리 — 나이별 검진·스케일링·예방치료 안내, 양치 기록, 검진 이력"
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev

@@ -10,7 +10,7 @@ class KidsDentalApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      title: '키즈 덴탈 케어',
+      title: '우리 가족 덴탈 관리',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
       routerConfig: appRouter,

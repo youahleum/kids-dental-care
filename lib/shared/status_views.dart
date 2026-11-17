@@ -38,7 +38,7 @@ class ErrorView extends StatelessWidget {
   }
 }
 
-/// 자녀 미등록 시 안내 + 홈 이동 액션.
+/// 가족 미등록 시 안내 + 홈 이동 액션.
 class NoChildView extends StatelessWidget {
   const NoChildView({super.key, this.onGoHome});
 
@@ -55,7 +55,7 @@ class NoChildView extends StatelessWidget {
             Icon(Icons.child_care,
                 size: 48, color: Theme.of(context).colorScheme.primary),
             const SizedBox(height: 12),
-            Text('먼저 자녀를 등록해 주세요.',
+            Text('먼저 가족을 등록해 주세요.',
                 style: TextStyle(color: Theme.of(context).hintColor)),
             if (onGoHome != null) ...[
               const SizedBox(height: 16),

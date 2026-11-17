@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/utils/age_utils.dart';
 import '../../data/providers.dart';
 import '../../domain/models/tooth_layout.dart';
 import '../../domain/models/tooth_record.dart';
@@ -20,7 +21,12 @@ class ToothChartScreen extends ConsumerStatefulWidget {
 }
 
 class _ToothChartScreenState extends ConsumerState<ToothChartScreen> {
-  bool _primary = true; // true: 유치, false: 영구치
+  /// 사용자가 고른 유치/영구치 (구성원 id별). 고르기 전에는 나이로 정한다.
+  final Map<int, bool> _primaryByMember = {};
+
+  /// 만 12세 무렵이면 유치가 거의 빠지므로 그 이상은 영구치로 시작.
+  static bool _defaultPrimary(DateTime birthDate) =>
+      AgeUtils.years(birthDate) < 12;
 
   @override
   Widget build(BuildContext context) {
@@ -32,18 +38,23 @@ class _ToothChartScreenState extends ConsumerState<ToothChartScreen> {
           ? NoChildView(
               onGoHome: () => ref.read(tabIndexProvider.notifier).state = 0,
             )
-          : Column(
-              children: [
-                const ChildSwitcher(),
-                _KindToggle(
-                  primary: _primary,
-                  onChanged: (v) => setState(() => _primary = v),
-                ),
-                Expanded(
-                  child: _Chart(childId: child.id, primary: _primary),
-                ),
-              ],
-            ),
+          : Builder(builder: (context) {
+              final primary = _primaryByMember[child.id] ??
+                  _defaultPrimary(child.birthDate);
+              return Column(
+                children: [
+                  const ChildSwitcher(),
+                  _KindToggle(
+                    primary: primary,
+                    onChanged: (v) =>
+                        setState(() => _primaryByMember[child.id] = v),
+                  ),
+                  Expanded(
+                    child: _Chart(childId: child.id, primary: primary),
+                  ),
+                ],
+              );
+            }),
     );
   }
 }

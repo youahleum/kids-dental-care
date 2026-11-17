@@ -1,11 +1,11 @@
 {
-    "name": "kids_dental_care",
-    "short_name": "kids_dental_care",
+    "name": "우리 가족 덴탈 관리",
+    "short_name": "가족 덴탈",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#F7FBFC",
     "theme_color": "#4DB6C4",
-    "description": "A new Flutter project.",
+    "description": "아이부터 어른까지 가족 치아 관리 — 나이별 검진·스케일링·예방치료 안내, 양치 기록, 검진 이력",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

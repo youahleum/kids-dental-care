@@ -79,7 +79,7 @@ class DentalChatContext {
         .length;
 
     final b = StringBuffer()
-      ..writeln('# 아이 정보')
+      ..writeln('# 구성원 정보')
       ..writeln('- 이름: ${child.name}')
       ..writeln('- 나이: $ageLabel (총 $months개월)')
       ..writeln('# 예방치료/검진 진행')

@@ -52,6 +52,21 @@ Future<void> runDevSeed(AppDatabase db) async {
     memo: '불소도포 · 충치 없음',
   );
 
+  // 어른: 이수진 (엄마, 1991년생) — 스케일링·국가건강검진 구강검진 일정
+  final momBirth = DateTime(1991, 3, 5);
+  final momId = await childRepo.add(
+    name: '이수진',
+    birthDate: momBirth,
+    colorValue: 0xFF9575CD,
+  );
+  await taskRepo.createForChild(momId, ScheduleEngine.generate(momBirth));
+  await checkupRepo.add(
+    childId: momId,
+    date: DateTime(2025, 12, 2),
+    clinicName: '해맑은치과',
+    memo: '스케일링 · 잇몸 양호',
+  );
+
   // 양치 기록: 지호는 최근 5일 연속 + 오늘 아침만, 서아는 띄엄띄엄.
   final brushing = BrushingRepositoryImpl(db);
   final today = dayOf(DateTime.now());
@@ -74,4 +89,7 @@ Future<void> runDevSeed(AppDatabase db) async {
     await brush(seoaId, i, BrushingSlot.values);
   }
   await brush(seoaId, 1, [BrushingSlot.night]);
+  for (var i = 0; i <= 12; i++) {
+    await brush(momId, i, BrushingSlot.values);
+  }
 }

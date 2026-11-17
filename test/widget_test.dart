@@ -41,7 +41,7 @@ void main() {
     expect(find.text('검진기록'), findsOneWidget);
     expect(find.text('AI상담'), findsOneWidget);
     expect(find.text('치아차트'), findsOneWidget);
-    expect(find.text('첫 아이를 등록해 주세요'), findsOneWidget);
+    expect(find.text('가족을 등록해 주세요'), findsOneWidget);
   });
 
   testWidgets('자녀가 있으면 카드가 표시된다', (WidgetTester tester) async {
@@ -56,6 +56,6 @@ void main() {
     await tester.pump();
 
     expect(find.text('김지호'), findsOneWidget);
-    expect(find.text('첫 아이를 등록해 주세요'), findsNothing);
+    expect(find.text('가족을 등록해 주세요'), findsNothing);
   });
 }
