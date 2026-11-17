@@ -7,6 +7,7 @@ import '../../domain/models/brushing.dart';
 import '../../domain/models/child.dart';
 import '../../domain/services/brushing_stats.dart';
 import '../../shared/child_avatar.dart';
+import 'celebration.dart';
 import '../../shared/gradient_app_bar.dart';
 
 /// 양치 기록 · 칭찬 스티커 판.
@@ -155,12 +156,22 @@ class BrushingToggle extends ConsumerWidget {
       borderRadius: BorderRadius.circular(large ? 16 : 20),
       child: InkWell(
         borderRadius: BorderRadius.circular(large ? 16 : 20),
-        onTap: () => ref.read(brushingRepositoryProvider).setBrushed(
-              childId: childId,
-              date: date,
-              slot: slot,
-              brushed: !checked,
-            ),
+        onTap: () async {
+          // 이번 체크로 그날 양치가 모두 채워지면 칭찬 효과를 보여준다.
+          final already = ref
+                  .read(brushingLogsProvider(childId))
+                  .valueOrNull?[dayOf(date)] ??
+              const <BrushingSlot>{};
+          final completes = !checked &&
+              already.length == BrushingSlot.values.length - 1;
+          await ref.read(brushingRepositoryProvider).setBrushed(
+                childId: childId,
+                date: date,
+                slot: slot,
+                brushed: !checked,
+              );
+          if (completes && context.mounted) showBrushingCelebration(context);
+        },
         child: Container(
           padding: EdgeInsets.symmetric(
               horizontal: large ? 12 : 10, vertical: large ? 16 : 6),
