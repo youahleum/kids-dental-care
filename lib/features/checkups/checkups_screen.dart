@@ -80,12 +80,10 @@ class _CheckupList extends ConsumerWidget {
                     color: Theme.of(context).hintColor)),
             const SizedBox(height: 8),
             if (records.isEmpty)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 24),
-                child: Center(
-                  child: Text('아직 검진 기록이 없습니다.',
-                      style: TextStyle(color: Theme.of(context).hintColor)),
-                ),
+              const MascotEmptyView(
+                compact: true,
+                title: '아직 검진 기록이 없어요',
+                message: '치과에 다녀오면 + 버튼으로 기록해 보세요.\n다음 검진일을 자동으로 계산해 드려요.',
               )
             else
               for (final r in records)

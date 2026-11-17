@@ -38,6 +38,75 @@ class ErrorView extends StatelessWidget {
   }
 }
 
+/// 빈 화면 안내: 치아 캐릭터 + 제목 + 설명 (+ 버튼).
+class MascotEmptyView extends StatelessWidget {
+  const MascotEmptyView({
+    super.key,
+    required this.title,
+    this.message,
+    this.actionLabel,
+    this.onAction,
+    this.compact = false,
+  });
+
+  final String title;
+  final String? message;
+  final String? actionLabel;
+  final VoidCallback? onAction;
+
+  /// 목록 안에 넣을 때처럼 작게 보여줄지.
+  final bool compact;
+
+  @override
+  Widget build(BuildContext context) {
+    final size = compact ? 72.0 : 104.0;
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.all(compact ? 16 : 28),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: size + 28,
+              height: size + 28,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Theme.of(context)
+                    .colorScheme
+                    .primary
+                    .withValues(alpha: 0.12),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(size * 0.28),
+                child: Image.asset('assets/icon/app_icon.png', width: size),
+              ),
+            ),
+            SizedBox(height: compact ? 12 : 18),
+            Text(title,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontSize: compact ? 14 : 17, fontWeight: FontWeight.w700)),
+            if (message != null) ...[
+              const SizedBox(height: 6),
+              Text(message!,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: 13,
+                      height: 1.4,
+                      color: Theme.of(context).hintColor)),
+            ],
+            if (actionLabel != null && onAction != null) ...[
+              const SizedBox(height: 18),
+              FilledButton(onPressed: onAction, child: Text(actionLabel!)),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 /// 가족 미등록 시 안내 + 홈 이동 액션.
 class NoChildView extends StatelessWidget {
   const NoChildView({super.key, this.onGoHome});
@@ -46,24 +115,11 @@ class NoChildView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.child_care,
-                size: 48, color: Theme.of(context).colorScheme.primary),
-            const SizedBox(height: 12),
-            Text('먼저 가족을 등록해 주세요.',
-                style: TextStyle(color: Theme.of(context).hintColor)),
-            if (onGoHome != null) ...[
-              const SizedBox(height: 16),
-              FilledButton(onPressed: onGoHome, child: const Text('홈으로 가기')),
-            ],
-          ],
-        ),
-      ),
+    return MascotEmptyView(
+      title: '먼저 가족을 등록해 주세요',
+      message: '홈에서 가족을 추가하면 여기에 기록이 보여요.',
+      actionLabel: onGoHome == null ? null : '홈으로 가기',
+      onAction: onGoHome,
     );
   }
 }

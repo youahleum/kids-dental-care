@@ -502,36 +502,12 @@ class _EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(28),
-              child: Image.asset('assets/icon/app_icon.png', width: 120),
-            ),
-            const SizedBox(height: 16),
-            const Text(
-              '가족을 등록해 주세요',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              '아이부터 어른까지, 생년월일만 입력하면 나이에 맞는 검진·스케일링·예방치료 일정을 챙겨드려요.',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Theme.of(context).hintColor),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () => Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const ChildEditScreen()),
-              ),
-              child: const Text('가족 추가하기'),
-            ),
-          ],
-        ),
+    return MascotEmptyView(
+      title: '가족을 등록해 주세요',
+      message: '아이부터 어른까지, 생년월일만 입력하면\n나이에 맞는 검진·스케일링·예방치료 일정을 챙겨드려요.',
+      actionLabel: '가족 추가하기',
+      onAction: () => Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => const ChildEditScreen()),
       ),
     );
   }

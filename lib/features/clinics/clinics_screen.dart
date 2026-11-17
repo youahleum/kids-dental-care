@@ -51,26 +51,11 @@ class ClinicsScreen extends ConsumerWidget {
         error: (e, _) => ErrorView(error: e),
         data: (clinics) {
           if (clinics.isEmpty) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.local_hospital_outlined,
-                        size: 48,
-                        color: Theme.of(context).colorScheme.primary),
-                    const SizedBox(height: 12),
-                    Text('자주 가는 치과를 등록해 두세요.',
-                        style: TextStyle(color: Theme.of(context).hintColor)),
-                    const SizedBox(height: 16),
-                    FilledButton(
-                      onPressed: () => _edit(context, ref),
-                      child: const Text('치과 추가'),
-                    ),
-                  ],
-                ),
-              ),
+            return MascotEmptyView(
+              title: '자주 가는 치과를 등록해 두세요',
+              message: '검진을 기록할 때 병원 이름이 자동으로 완성돼요.',
+              actionLabel: '치과 추가',
+              onAction: () => _edit(context, ref),
             );
           }
           return ListView.separated(

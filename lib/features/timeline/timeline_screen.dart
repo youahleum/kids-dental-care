@@ -69,7 +69,16 @@ class _TimelineList extends ConsumerWidget {
           _Filter.done => all.where((t) => t.status == TaskStatus.done).toList(),
         };
         if (tasks.isEmpty) {
-          return const Center(child: Text('표시할 항목이 없습니다.'));
+          return MascotEmptyView(
+            title: switch (filter) {
+              _Filter.done => '아직 완료한 항목이 없어요',
+              _Filter.pending => '남은 일정이 없어요. 잘하고 있어요!',
+              _Filter.all => '표시할 일정이 없어요',
+            },
+            message: filter == _Filter.done
+                ? '검진·예방치료를 받고 항목을 눌러 완료로 표시해 보세요.'
+                : null,
+          );
         }
 
         // 임박 항목: 미완료 중 권장일이 가장 가까운(오늘 이후 우선) 것.
