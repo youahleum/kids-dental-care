@@ -10,6 +10,7 @@ abstract interface class CheckupRepository {
     required DateTime date,
     String? clinicName,
     String? memo,
+    int? cost,
   });
 
   Future<void> delete(int id);

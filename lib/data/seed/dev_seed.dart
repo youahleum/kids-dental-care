@@ -52,6 +52,7 @@ Future<void> runDevSeed(AppDatabase db) async {
     date: DateTime(2026, 5, 5),
     clinicName: '해맑은치과',
     memo: '불소도포 · 충치 없음',
+    cost: 8000,
   );
 
   // 어른: 이수진 (엄마, 1991년생) — 스케일링·국가건강검진 구강검진 일정
@@ -67,6 +68,7 @@ Future<void> runDevSeed(AppDatabase db) async {
     date: DateTime(2025, 12, 2),
     clinicName: '해맑은치과',
     memo: '스케일링 · 잇몸 양호',
+    cost: 15000,
   );
 
   // 치아 이력: 서아는 충치가 생겼다가 일부 치료됨 + 앞니 이갈이 진행 중

@@ -15,6 +15,7 @@ class CheckupRepositoryImpl implements CheckupRepository {
         date: row.date,
         clinicName: row.clinicName,
         memo: row.memo,
+        cost: row.cost,
       );
 
   @override
@@ -33,6 +34,7 @@ class CheckupRepositoryImpl implements CheckupRepository {
     required DateTime date,
     String? clinicName,
     String? memo,
+    int? cost,
   }) {
     return _db.into(_db.checkupRecords).insert(
           CheckupRecordsCompanion.insert(
@@ -40,6 +42,7 @@ class CheckupRepositoryImpl implements CheckupRepository {
             date: date,
             clinicName: Value(clinicName),
             memo: Value(memo),
+            cost: Value(cost),
           ),
         );
   }

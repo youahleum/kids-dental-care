@@ -73,6 +73,7 @@ class BackupService {
             'date': _ms(r.date),
             'clinicName': r.clinicName,
             'memo': r.memo,
+            'cost': r.cost,
           },
       ],
       'toothRecords': [
@@ -189,6 +190,7 @@ class BackupService {
                 date: _dt(r['date'] as int),
                 clinicName: Value(r['clinicName'] as String?),
                 memo: Value(r['memo'] as String?),
+                cost: Value(r['cost'] as int?),
               ),
             );
       }

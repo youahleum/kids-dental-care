@@ -61,4 +61,13 @@ void main() {
     await childRepo.delete(childId);
     expect(await checkupRepo.watchByChild(childId).first, isEmpty);
   });
+
+  test('진료비가 저장되고, 없으면 null', () async {
+    final childId = await addChild();
+    await checkupRepo.add(
+        childId: childId, date: DateTime(2026, 11, 1), cost: 15000);
+    await checkupRepo.add(childId: childId, date: DateTime(2026, 5, 1));
+    final list = await checkupRepo.watchByChild(childId).first;
+    expect(list.map((r) => r.cost), [15000, null]);
+  });
 }

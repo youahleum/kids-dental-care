@@ -40,6 +40,9 @@ class CheckupRecords extends Table {
   DateTimeColumn get date => dateTime()();
   TextColumn get clinicName => text().nullable()();
   TextColumn get memo => text().nullable()();
+
+  /// 진료비(원). 스케일링·치료비 등.
+  IntColumn get cost => integer().nullable()();
 }
 
 /// 치아별 상태 기록 테이블. 기준 문서: PLAN.md 6장
@@ -114,7 +117,7 @@ class AppDatabase extends _$AppDatabase {
       : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 7;
+  int get schemaVersion => 8;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -142,6 +145,10 @@ class AppDatabase extends _$AppDatabase {
               'INSERT INTO tooth_events (child_id, tooth_code, kind, status, date) '
               'SELECT child_id, tooth_code, 0, status, updated_at FROM tooth_records',
             );
+          }
+          if (from >= 3 && from < 8) {
+            // v3 이전에서 오면 createTable(checkupRecords)이 이미 cost 포함으로 만든다.
+            await m.addColumn(checkupRecords, checkupRecords.cost);
           }
         },
         beforeOpen: (details) async {

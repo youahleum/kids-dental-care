@@ -9,6 +9,7 @@ class CheckupRecord {
     required this.date,
     this.clinicName,
     this.memo,
+    this.cost,
   });
 
   final int id;
@@ -16,6 +17,9 @@ class CheckupRecord {
   final DateTime date;
   final String? clinicName;
   final String? memo;
+
+  /// 진료비(원). 없으면 null.
+  final int? cost;
 
   CheckupRecord copyWith({
     DateTime? date,
@@ -28,6 +32,7 @@ class CheckupRecord {
       date: date ?? this.date,
       clinicName: clinicName ?? this.clinicName,
       memo: memo ?? this.memo,
+      cost: cost,
     );
   }
 }

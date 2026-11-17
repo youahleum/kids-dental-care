@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
@@ -18,11 +19,13 @@ class _CheckupAddScreenState extends ConsumerState<CheckupAddScreen> {
   DateTime _date = DateTime.now();
   final _clinicController = TextEditingController();
   final _memoController = TextEditingController();
+  final _costController = TextEditingController();
 
   @override
   void dispose() {
     _clinicController.dispose();
     _memoController.dispose();
+    _costController.dispose();
     super.dispose();
   }
 
@@ -48,6 +51,7 @@ class _CheckupAddScreenState extends ConsumerState<CheckupAddScreen> {
           memo: _memoController.text.trim().isEmpty
               ? null
               : _memoController.text.trim(),
+          cost: int.tryParse(_costController.text.replaceAll(',', '')),
         );
     if (mounted) Navigator.of(context).pop();
   }
@@ -85,6 +89,18 @@ class _CheckupAddScreenState extends ConsumerState<CheckupAddScreen> {
           ),
           const SizedBox(height: 16),
           _ClinicField(controller: _clinicController),
+          const SizedBox(height: 16),
+          TextField(
+            controller: _costController,
+            keyboardType: TextInputType.number,
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            decoration: const InputDecoration(
+              labelText: '진료비 (선택)',
+              hintText: '예: 15000',
+              suffixText: '원',
+              border: OutlineInputBorder(),
+            ),
+          ),
           const SizedBox(height: 16),
           TextField(
             controller: _memoController,

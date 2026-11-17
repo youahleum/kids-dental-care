@@ -982,8 +982,24 @@ class $CheckupRecordsTable extends CheckupRecords
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _costMeta = const VerificationMeta('cost');
   @override
-  List<GeneratedColumn> get $columns => [id, childId, date, clinicName, memo];
+  late final GeneratedColumn<int> cost = GeneratedColumn<int>(
+    'cost',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    childId,
+    date,
+    clinicName,
+    memo,
+    cost,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -1027,6 +1043,12 @@ class $CheckupRecordsTable extends CheckupRecords
         memo.isAcceptableOrUnknown(data['memo']!, _memoMeta),
       );
     }
+    if (data.containsKey('cost')) {
+      context.handle(
+        _costMeta,
+        cost.isAcceptableOrUnknown(data['cost']!, _costMeta),
+      );
+    }
     return context;
   }
 
@@ -1056,6 +1078,10 @@ class $CheckupRecordsTable extends CheckupRecords
         DriftSqlType.string,
         data['${effectivePrefix}memo'],
       ),
+      cost: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}cost'],
+      ),
     );
   }
 
@@ -1072,12 +1098,16 @@ class CheckupRecordRow extends DataClass
   final DateTime date;
   final String? clinicName;
   final String? memo;
+
+  /// 진료비(원). 스케일링·치료비 등.
+  final int? cost;
   const CheckupRecordRow({
     required this.id,
     required this.childId,
     required this.date,
     this.clinicName,
     this.memo,
+    this.cost,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1091,6 +1121,9 @@ class CheckupRecordRow extends DataClass
     if (!nullToAbsent || memo != null) {
       map['memo'] = Variable<String>(memo);
     }
+    if (!nullToAbsent || cost != null) {
+      map['cost'] = Variable<int>(cost);
+    }
     return map;
   }
 
@@ -1103,6 +1136,7 @@ class CheckupRecordRow extends DataClass
           ? const Value.absent()
           : Value(clinicName),
       memo: memo == null && nullToAbsent ? const Value.absent() : Value(memo),
+      cost: cost == null && nullToAbsent ? const Value.absent() : Value(cost),
     );
   }
 
@@ -1117,6 +1151,7 @@ class CheckupRecordRow extends DataClass
       date: serializer.fromJson<DateTime>(json['date']),
       clinicName: serializer.fromJson<String?>(json['clinicName']),
       memo: serializer.fromJson<String?>(json['memo']),
+      cost: serializer.fromJson<int?>(json['cost']),
     );
   }
   @override
@@ -1128,6 +1163,7 @@ class CheckupRecordRow extends DataClass
       'date': serializer.toJson<DateTime>(date),
       'clinicName': serializer.toJson<String?>(clinicName),
       'memo': serializer.toJson<String?>(memo),
+      'cost': serializer.toJson<int?>(cost),
     };
   }
 
@@ -1137,12 +1173,14 @@ class CheckupRecordRow extends DataClass
     DateTime? date,
     Value<String?> clinicName = const Value.absent(),
     Value<String?> memo = const Value.absent(),
+    Value<int?> cost = const Value.absent(),
   }) => CheckupRecordRow(
     id: id ?? this.id,
     childId: childId ?? this.childId,
     date: date ?? this.date,
     clinicName: clinicName.present ? clinicName.value : this.clinicName,
     memo: memo.present ? memo.value : this.memo,
+    cost: cost.present ? cost.value : this.cost,
   );
   CheckupRecordRow copyWithCompanion(CheckupRecordsCompanion data) {
     return CheckupRecordRow(
@@ -1153,6 +1191,7 @@ class CheckupRecordRow extends DataClass
           ? data.clinicName.value
           : this.clinicName,
       memo: data.memo.present ? data.memo.value : this.memo,
+      cost: data.cost.present ? data.cost.value : this.cost,
     );
   }
 
@@ -1163,13 +1202,14 @@ class CheckupRecordRow extends DataClass
           ..write('childId: $childId, ')
           ..write('date: $date, ')
           ..write('clinicName: $clinicName, ')
-          ..write('memo: $memo')
+          ..write('memo: $memo, ')
+          ..write('cost: $cost')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, childId, date, clinicName, memo);
+  int get hashCode => Object.hash(id, childId, date, clinicName, memo, cost);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1178,7 +1218,8 @@ class CheckupRecordRow extends DataClass
           other.childId == this.childId &&
           other.date == this.date &&
           other.clinicName == this.clinicName &&
-          other.memo == this.memo);
+          other.memo == this.memo &&
+          other.cost == this.cost);
 }
 
 class CheckupRecordsCompanion extends UpdateCompanion<CheckupRecordRow> {
@@ -1187,12 +1228,14 @@ class CheckupRecordsCompanion extends UpdateCompanion<CheckupRecordRow> {
   final Value<DateTime> date;
   final Value<String?> clinicName;
   final Value<String?> memo;
+  final Value<int?> cost;
   const CheckupRecordsCompanion({
     this.id = const Value.absent(),
     this.childId = const Value.absent(),
     this.date = const Value.absent(),
     this.clinicName = const Value.absent(),
     this.memo = const Value.absent(),
+    this.cost = const Value.absent(),
   });
   CheckupRecordsCompanion.insert({
     this.id = const Value.absent(),
@@ -1200,6 +1243,7 @@ class CheckupRecordsCompanion extends UpdateCompanion<CheckupRecordRow> {
     required DateTime date,
     this.clinicName = const Value.absent(),
     this.memo = const Value.absent(),
+    this.cost = const Value.absent(),
   }) : childId = Value(childId),
        date = Value(date);
   static Insertable<CheckupRecordRow> custom({
@@ -1208,6 +1252,7 @@ class CheckupRecordsCompanion extends UpdateCompanion<CheckupRecordRow> {
     Expression<DateTime>? date,
     Expression<String>? clinicName,
     Expression<String>? memo,
+    Expression<int>? cost,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -1215,6 +1260,7 @@ class CheckupRecordsCompanion extends UpdateCompanion<CheckupRecordRow> {
       if (date != null) 'date': date,
       if (clinicName != null) 'clinic_name': clinicName,
       if (memo != null) 'memo': memo,
+      if (cost != null) 'cost': cost,
     });
   }
 
@@ -1224,6 +1270,7 @@ class CheckupRecordsCompanion extends UpdateCompanion<CheckupRecordRow> {
     Value<DateTime>? date,
     Value<String?>? clinicName,
     Value<String?>? memo,
+    Value<int?>? cost,
   }) {
     return CheckupRecordsCompanion(
       id: id ?? this.id,
@@ -1231,6 +1278,7 @@ class CheckupRecordsCompanion extends UpdateCompanion<CheckupRecordRow> {
       date: date ?? this.date,
       clinicName: clinicName ?? this.clinicName,
       memo: memo ?? this.memo,
+      cost: cost ?? this.cost,
     );
   }
 
@@ -1252,6 +1300,9 @@ class CheckupRecordsCompanion extends UpdateCompanion<CheckupRecordRow> {
     if (memo.present) {
       map['memo'] = Variable<String>(memo.value);
     }
+    if (cost.present) {
+      map['cost'] = Variable<int>(cost.value);
+    }
     return map;
   }
 
@@ -1262,7 +1313,8 @@ class CheckupRecordsCompanion extends UpdateCompanion<CheckupRecordRow> {
           ..write('childId: $childId, ')
           ..write('date: $date, ')
           ..write('clinicName: $clinicName, ')
-          ..write('memo: $memo')
+          ..write('memo: $memo, ')
+          ..write('cost: $cost')
           ..write(')'))
         .toString();
   }
@@ -3921,6 +3973,7 @@ typedef $$CheckupRecordsTableCreateCompanionBuilder =
       required DateTime date,
       Value<String?> clinicName,
       Value<String?> memo,
+      Value<int?> cost,
     });
 typedef $$CheckupRecordsTableUpdateCompanionBuilder =
     CheckupRecordsCompanion Function({
@@ -3929,6 +3982,7 @@ typedef $$CheckupRecordsTableUpdateCompanionBuilder =
       Value<DateTime> date,
       Value<String?> clinicName,
       Value<String?> memo,
+      Value<int?> cost,
     });
 
 final class $$CheckupRecordsTableReferences
@@ -3987,6 +4041,11 @@ class $$CheckupRecordsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<int> get cost => $composableBuilder(
+    column: $table.cost,
+    builder: (column) => ColumnFilters(column),
+  );
+
   $$ChildrenTableFilterComposer get childId {
     final $$ChildrenTableFilterComposer composer = $composerBuilder(
       composer: this,
@@ -4040,6 +4099,11 @@ class $$CheckupRecordsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get cost => $composableBuilder(
+    column: $table.cost,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$ChildrenTableOrderingComposer get childId {
     final $$ChildrenTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -4086,6 +4150,9 @@ class $$CheckupRecordsTableAnnotationComposer
 
   GeneratedColumn<String> get memo =>
       $composableBuilder(column: $table.memo, builder: (column) => column);
+
+  GeneratedColumn<int> get cost =>
+      $composableBuilder(column: $table.cost, builder: (column) => column);
 
   $$ChildrenTableAnnotationComposer get childId {
     final $$ChildrenTableAnnotationComposer composer = $composerBuilder(
@@ -4146,12 +4213,14 @@ class $$CheckupRecordsTableTableManager
                 Value<DateTime> date = const Value.absent(),
                 Value<String?> clinicName = const Value.absent(),
                 Value<String?> memo = const Value.absent(),
+                Value<int?> cost = const Value.absent(),
               }) => CheckupRecordsCompanion(
                 id: id,
                 childId: childId,
                 date: date,
                 clinicName: clinicName,
                 memo: memo,
+                cost: cost,
               ),
           createCompanionCallback:
               ({
@@ -4160,12 +4229,14 @@ class $$CheckupRecordsTableTableManager
                 required DateTime date,
                 Value<String?> clinicName = const Value.absent(),
                 Value<String?> memo = const Value.absent(),
+                Value<int?> cost = const Value.absent(),
               }) => CheckupRecordsCompanion.insert(
                 id: id,
                 childId: childId,
                 date: date,
                 clinicName: clinicName,
                 memo: memo,
+                cost: cost,
               ),
           withReferenceMapper: (p0) => p0
               .map(

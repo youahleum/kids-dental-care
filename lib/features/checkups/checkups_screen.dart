@@ -68,6 +68,10 @@ class _CheckupList extends ConsumerWidget {
           padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
           children: [
             _NextCard(nextDate: nextDate),
+            if (records.any((r) => r.cost != null)) ...[
+              const SizedBox(height: 12),
+              _CostSummary(records: records),
+            ],
             const SizedBox(height: 12),
             Text('지난 이력',
                 style: TextStyle(
@@ -96,6 +100,49 @@ class _CheckupList extends ConsumerWidget {
           ],
         );
       },
+    );
+  }
+}
+
+/// 금액 표기: 45000 → '45,000원'.
+String formatWon(int won) => '${NumberFormat.decimalPattern('ko').format(won)}원';
+
+/// 진료비 요약: 올해 합계 · 전체 합계.
+class _CostSummary extends StatelessWidget {
+  const _CostSummary({required this.records});
+
+  final List<CheckupRecord> records;
+
+  @override
+  Widget build(BuildContext context) {
+    final year = DateTime.now().year;
+    final thisYear = records
+        .where((r) => r.date.year == year)
+        .fold<int>(0, (sum, r) => sum + (r.cost ?? 0));
+    final total = records.fold<int>(0, (sum, r) => sum + (r.cost ?? 0));
+    final hint = Theme.of(context).hintColor;
+    Widget cell(String label, int value) => Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(label, style: TextStyle(fontSize: 12, color: hint)),
+              const SizedBox(height: 2),
+              Text(formatWon(value),
+                  style: const TextStyle(
+                      fontSize: 17, fontWeight: FontWeight.w700)),
+            ],
+          ),
+        );
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Row(children: [
+          const Text('💰', style: TextStyle(fontSize: 22)),
+          const SizedBox(width: 12),
+          cell('$year년 진료비', thisYear),
+          cell('전체 진료비', total),
+        ]),
+      ),
     );
   }
 }
@@ -204,6 +251,12 @@ class _CheckupCard extends StatelessWidget {
                       ],
                     ],
                   ),
+                  if (record.cost != null) ...[
+                    const SizedBox(height: 5),
+                    Text(formatWon(record.cost!),
+                        style: const TextStyle(
+                            fontSize: 13, fontWeight: FontWeight.w600)),
+                  ],
                   if (record.memo != null) ...[
                     const SizedBox(height: 5),
                     Text(record.memo!,
