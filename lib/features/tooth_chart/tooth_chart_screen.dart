@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -107,29 +109,17 @@ class _Chart extends ConsumerWidget {
                 padding: const EdgeInsets.all(12),
                 child: Column(
                   children: [
-                    Text('위턱 (상악)',
-                        style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: Theme.of(context).hintColor)),
-                    const SizedBox(height: 6),
-                    const _SideGuide(),
-                    const SizedBox(height: 6),
                     _Arch(
                         codes: upper,
                         records: records,
                         childId: childId,
                         upper: true),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 14),
                     _Arch(codes: lower, records: records, childId: childId),
-                    const SizedBox(height: 6),
-                    const _SideGuide(),
-                    const SizedBox(height: 6),
-                    Text('아래턱 (하악)',
+                    const SizedBox(height: 10),
+                    Text('치아를 누르면 이름을 보고 상태를 기록할 수 있어요.',
                         style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: Theme.of(context).hintColor)),
+                            fontSize: 11, color: Theme.of(context).hintColor)),
                   ],
                 ),
               ),
@@ -147,27 +137,9 @@ class _Chart extends ConsumerWidget {
   }
 }
 
-/// 좌/우 방향 가이드 (화면 기준). 가운데는 앞니, 바깥으로 갈수록 어금니.
-class _SideGuide extends StatelessWidget {
-  const _SideGuide();
-
-  @override
-  Widget build(BuildContext context) {
-    final style = TextStyle(
-        fontSize: 11,
-        fontWeight: FontWeight.w600,
-        color: Theme.of(context).colorScheme.primary);
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text('◀ 오른쪽', style: style),
-        Text('가운데', style: TextStyle(fontSize: 10, color: Theme.of(context).hintColor)),
-        Text('왼쪽 ▶', style: style),
-      ],
-    );
-  }
-}
-
+/// 치아를 실제 턱처럼 U자(아치)로 배치한다. 위턱은 ∩, 아래턱은 ∪ 모양이고
+/// 뿌리가 바깥, 씹는 면이 안쪽을 향하도록 치아를 돌려 놓는다.
+/// 폭에 맞춰 크기를 정하므로 영구치 16개도 옆으로 밀지 않고 한눈에 보인다.
 class _Arch extends StatelessWidget {
   const _Arch({
     required this.codes,
@@ -181,41 +153,112 @@ class _Arch extends StatelessWidget {
   final int childId;
   final bool upper;
 
+  static const _toothH = 34.0;
+  static const _gap = 2.0;
+
   @override
   Widget build(BuildContext context) {
-    // 좌/우 절반 사이에 중앙 구분선을 넣어 방향을 명확히 한다.
-    final half = codes.length ~/ 2;
-    Widget tooth(int code) => _Tooth(
-          code: code,
-          status: records[code]?.status ?? ToothStatus.healthy,
-          childId: childId,
-          upper: upper,
+    return LayoutBuilder(builder: (context, c) {
+      final w = math.min(c.maxWidth, 360.0);
+      // 치아 중심이 지나는 반타원. 치아 높이의 절반만큼 안쪽으로 들인다.
+      final a = w / 2 - _toothH / 2 - 2;
+      final b = a * 0.88;
+      final height = b + _toothH / 2 + 4;
+      final cx = c.maxWidth / 2;
+      final cy = upper ? height : 0.0;
+
+      // 반타원을 잘게 나눠 호 길이를 구한다 (치아를 폭에 비례해 고르게 놓기 위해).
+      const steps = 240;
+      Offset at(double t) {
+        final th = math.pi * (1 - t); // t=0 왼쪽 끝 → t=1 오른쪽 끝
+        return Offset(
+          cx + a * math.cos(th),
+          upper ? cy - b * math.sin(th) : cy + b * math.sin(th),
         );
-    // 영구치는 16개라 좁은 화면에서 넘칠 수 있어 가로 스크롤로 감싼다.
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment:
-            upper ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-        children: [
-          for (final code in codes.sublist(0, half))
-            Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 2),
-                child: tooth(code)),
-          Container(
-            width: 1,
-            height: 30,
-            margin: const EdgeInsets.symmetric(horizontal: 4),
-            color: Theme.of(context).dividerColor,
+      }
+
+      final cum = <double>[0];
+      for (var i = 1; i <= steps; i++) {
+        cum.add(cum.last + (at(i / steps) - at((i - 1) / steps)).distance);
+      }
+      final arcLen = cum.last;
+
+      double baseWidth(int code) =>
+          ToothLayout.kind(code) == ToothKind.molar ? 28.0 : 20.0;
+      final needed = codes.fold<double>(0, (sum, code) => sum + baseWidth(code)) +
+          _gap * (codes.length - 1);
+      // 호에 딱 맞게 줄이되, 유치처럼 여유가 있으면 조금만 키운다.
+      final scale = math.min(arcLen / needed, 1.25);
+
+      double tAt(double len) {
+        var i = cum.indexWhere((v) => v >= len);
+        if (i <= 0) i = 1;
+        final seg = cum[i] - cum[i - 1];
+        return (i - 1 + (seg == 0 ? 0 : (len - cum[i - 1]) / seg)) / steps;
+      }
+
+      final children = <Widget>[];
+      var cursor = (arcLen - needed * scale) / 2;
+      for (final code in codes) {
+        final tw = baseWidth(code) * scale;
+        final th = _toothH * math.min(scale, 1.1);
+        final t = tAt(cursor + tw / 2);
+        cursor += tw + _gap * scale;
+
+        final pos = at(t);
+        final ang = math.pi * (1 - t);
+        // 타원의 바깥 방향(법선). 뿌리가 이쪽을 향한다.
+        var nx = math.cos(ang) / a;
+        var ny = (upper ? -1 : 1) * math.sin(ang) / b;
+        final nl = math.sqrt(nx * nx + ny * ny);
+        nx /= nl;
+        ny /= nl;
+
+        children.add(Positioned(
+          left: pos.dx - tw / 2,
+          top: pos.dy - th / 2,
+          child: Transform.rotate(
+            angle: math.atan2(-nx, ny),
+            child: _Tooth(
+              code: code,
+              status: records[code]?.status ?? ToothStatus.healthy,
+              childId: childId,
+              size: Size(tw, th),
+            ),
           ),
-          for (final code in codes.sublist(half))
-            Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 2),
-                child: tooth(code)),
-        ],
-      ),
-    );
+        ));
+      }
+
+      final hint = Theme.of(context).hintColor;
+      return SizedBox(
+        height: height,
+        width: c.maxWidth,
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            // 아치 안쪽 안내: 어느 턱인지 + 좌우.
+            Positioned(
+              left: 0,
+              right: 0,
+              top: upper ? height - 46 : 12,
+              child: Column(
+                children: [
+                  Text(upper ? '위턱' : '아래턱',
+                      style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: hint)),
+                  const SizedBox(height: 2),
+                  Text('◀ 오른쪽 · 왼쪽 ▶',
+                      style: TextStyle(fontSize: 10, color: hint)),
+                ],
+              ),
+            ),
+            ...children,
+          ],
+        ),
+      );
+    });
   }
 }
 
@@ -224,48 +267,33 @@ class _Tooth extends ConsumerWidget {
     required this.code,
     required this.status,
     required this.childId,
-    this.upper = false,
+    required this.size,
   });
 
   final int code;
   final ToothStatus status;
   final int childId;
-
-  /// 위턱 치아: 실제 입안처럼 뿌리가 위, 크라운이 아래로 매달린 모양.
-  final bool upper;
+  final Size size;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final style = toothStatusStyle(status);
     final isHealthy = status == ToothStatus.healthy;
-    final kind = ToothLayout.kind(code);
-    // 종류별 폭: 어금니 넓게, 앞니·송곳니 좁게.
-    final width = kind == ToothKind.molar ? 28.0 : 20.0;
 
-    final shape = Transform.flip(
-      flipY: upper,
-      child: CustomPaint(
-        size: Size(width, 34),
-        painter: ToothPainter(
-          kind: kind,
-          fill: style.color,
-          border: isHealthy ? const Color(0xFFB0BEC5) : style.color,
+    return Semantics(
+      button: true,
+      label: '${ToothLayout.label(code)}, ${style.label}',
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () => _openSheet(context, ref),
+        child: CustomPaint(
+          size: size,
+          painter: ToothPainter(
+            kind: ToothLayout.kind(code),
+            fill: style.color,
+            border: isHealthy ? const Color(0xFFB0BEC5) : style.color,
+          ),
         ),
-      ),
-    );
-    final label = Text(
-      ToothLayout.shortMark(code),
-      style: TextStyle(fontSize: 9, color: Theme.of(context).hintColor),
-    );
-
-    // 라벨은 바깥쪽(위턱은 위, 아래턱은 아래)에 두어 두 턱의 크라운이 마주보게 한다.
-    return InkWell(
-      onTap: () => _openSheet(context, ref),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: upper
-            ? [label, const SizedBox(height: 3), shape]
-            : [shape, const SizedBox(height: 3), label],
       ),
     );
   }

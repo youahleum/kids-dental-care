@@ -24,14 +24,38 @@ class ToothPainter extends CustomPainter {
       ToothKind.canine => _canine(w, h),
       ToothKind.molar => _molar(w, h),
     };
-    canvas.drawPath(path, Paint()..color = fill..style = PaintingStyle.fill);
+    // 바닥 그림자 → 입체감.
+    canvas.drawPath(
+      path.shift(const Offset(0, 1.2)),
+      Paint()
+        ..color = const Color(0x33000000)
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 1.6),
+    );
+    // 왼쪽 위에서 빛이 드는 그라데이션 채움.
+    final hsl = HSLColor.fromColor(fill);
+    final shade =
+        hsl.withLightness((hsl.lightness - 0.12).clamp(0.0, 1.0)).toColor();
+    canvas.drawPath(
+      path,
+      Paint()
+        ..shader = LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [fill, shade],
+        ).createShader(Offset.zero & size),
+    );
     canvas.drawPath(
       path,
       Paint()
         ..color = border
         ..style = PaintingStyle.stroke
-        ..strokeWidth = 1.4
+        ..strokeWidth = 1.2
         ..strokeJoin = StrokeJoin.round,
+    );
+    // 크라운 위 작은 광택.
+    canvas.drawOval(
+      Rect.fromLTWH(w * 0.24, h * 0.13, w * 0.18, h * 0.16),
+      Paint()..color = Colors.white.withValues(alpha: 0.55),
     );
   }
 
