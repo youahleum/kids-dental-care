@@ -6,6 +6,7 @@ import '../../shared/child_switcher.dart';
 import '../children/selected_child.dart';
 import 'chat_controller.dart';
 import 'chat_message.dart';
+import '../../shared/gradient_app_bar.dart';
 
 /// AI 치아 상담 챗봇. 구성원의 나이·기록을 컨텍스트로 개인화 답변을 준다.
 class ChatScreen extends ConsumerStatefulWidget {
@@ -55,7 +56,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final child = ref.watch(selectedChildProvider);
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: GradientAppBar(
         title: const Text('AI 치아 상담'),
       ),
       body: Column(

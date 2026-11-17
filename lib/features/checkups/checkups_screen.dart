@@ -12,6 +12,7 @@ import '../children/selected_child.dart';
 import '../home/tab_index.dart';
 import '../settings/settings_controller.dart';
 import 'checkup_add_screen.dart';
+import '../../shared/gradient_app_bar.dart';
 
 /// 검진 기록 · 이력. 기준: DESIGN.md 6-4
 class CheckupsScreen extends ConsumerWidget {
@@ -22,7 +23,7 @@ class CheckupsScreen extends ConsumerWidget {
     final child = ref.watch(selectedChildProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('검진 기록')),
+      appBar: GradientAppBar(title: const Text('검진 기록')),
       floatingActionButton: child == null
           ? null
           : FloatingActionButton(

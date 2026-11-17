@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../data/providers.dart';
+import '../../shared/gradient_app_bar.dart';
 
 /// 검진 추가 화면. 기준: DESIGN.md 6-4
 class CheckupAddScreen extends ConsumerStatefulWidget {
@@ -59,7 +60,7 @@ class _CheckupAddScreenState extends ConsumerState<CheckupAddScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: GradientAppBar(
         title: const Text('검진 추가'),
         actions: [
           TextButton(

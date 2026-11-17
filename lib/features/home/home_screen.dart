@@ -14,6 +14,7 @@ import '../children/child_edit_screen.dart';
 import '../children/selected_child.dart';
 import '../settings/settings_screen.dart';
 import 'tab_index.dart';
+import '../../shared/gradient_app_bar.dart';
 
 /// 홈 · 가족 구성원 선택. 기준: DESIGN.md 6-1
 class HomeScreen extends ConsumerWidget {
@@ -117,9 +118,7 @@ class _HomeHeader extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: Theme.of(context).brightness == Brightness.dark
-              ? const [Color(0xFF1F5F68), Color(0xFF2A7F8C)]
-              : const [AppColors.mint, Color(0xFF6CC9D3)],
+          colors: headerGradient(context),
         ),
         borderRadius: const BorderRadius.vertical(bottom: Radius.circular(28)),
       ),

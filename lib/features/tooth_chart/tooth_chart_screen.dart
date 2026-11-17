@@ -12,6 +12,7 @@ import '../home/tab_index.dart';
 import 'caries_trend_chart.dart';
 import 'tooth_painter.dart';
 import 'tooth_status_style.dart';
+import '../../shared/gradient_app_bar.dart';
 
 /// 치아별 상태 기록. 기준: DESIGN.md 6-5
 class ToothChartScreen extends ConsumerStatefulWidget {
@@ -34,7 +35,7 @@ class _ToothChartScreenState extends ConsumerState<ToothChartScreen> {
     final child = ref.watch(selectedChildProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('치아 차트')),
+      appBar: GradientAppBar(title: const Text('치아 차트')),
       body: child == null
           ? NoChildView(
               onGoHome: () => ref.read(tabIndexProvider.notifier).state = 0,

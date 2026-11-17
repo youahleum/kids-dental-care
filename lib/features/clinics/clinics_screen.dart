@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/providers.dart';
 import '../../domain/models/clinic.dart';
 import '../../shared/status_views.dart';
+import '../../shared/gradient_app_bar.dart';
 
 /// 단골 치과 관리. 기준: PLAN.md 10장
 class ClinicsScreen extends ConsumerWidget {
@@ -40,7 +41,7 @@ class ClinicsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final async = ref.watch(clinicsProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('단골 치과')),
+      appBar: GradientAppBar(title: const Text('단골 치과')),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _edit(context, ref),
         child: const Icon(Icons.add),

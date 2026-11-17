@@ -7,6 +7,7 @@ import '../../core/utils/age_utils.dart';
 import '../../data/providers.dart';
 import '../../domain/models/child.dart';
 import '../../domain/services/schedule_engine.dart';
+import '../../shared/gradient_app_bar.dart';
 
 /// 가족 구성원 등록/편집 화면. 기준: DESIGN.md 6-2
 class ChildEditScreen extends ConsumerStatefulWidget {
@@ -91,7 +92,7 @@ class _ChildEditScreenState extends ConsumerState<ChildEditScreen> {
         : DateFormat('yyyy-MM-dd').format(_birthDate!);
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: GradientAppBar(
         title: Text(_isEdit ? '가족 편집' : '가족 추가'),
         actions: [
           TextButton(

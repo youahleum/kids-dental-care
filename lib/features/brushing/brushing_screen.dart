@@ -7,6 +7,7 @@ import '../../domain/models/brushing.dart';
 import '../../domain/models/child.dart';
 import '../../domain/services/brushing_stats.dart';
 import '../../shared/child_avatar.dart';
+import '../../shared/gradient_app_bar.dart';
 
 /// 양치 기록 · 칭찬 스티커 판.
 class BrushingScreen extends ConsumerWidget {
@@ -23,7 +24,7 @@ class BrushingScreen extends ConsumerWidget {
     final stats = ref.watch(brushingStatsProvider(child.id));
 
     return Scaffold(
-      appBar: AppBar(title: Text('${child.name} 양치 기록')),
+      appBar: GradientAppBar(title: Text('${child.name} 양치 기록')),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [

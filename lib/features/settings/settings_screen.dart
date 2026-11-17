@@ -8,6 +8,7 @@ import '../notifications/notification_controller.dart';
 import '../../domain/models/app_settings.dart';
 import '../../domain/models/brushing.dart';
 import 'settings_controller.dart';
+import '../../shared/gradient_app_bar.dart';
 
 /// 설정 화면. 기준: DESIGN.md 6-6
 class SettingsScreen extends ConsumerWidget {
@@ -19,7 +20,7 @@ class SettingsScreen extends ConsumerWidget {
     final notifier = ref.read(settingsProvider.notifier);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('설정')),
+      appBar: GradientAppBar(title: const Text('설정')),
       body: ListView(
         children: [
           SwitchListTile(

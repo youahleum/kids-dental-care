@@ -10,6 +10,7 @@ import '../../shared/status_views.dart';
 import '../children/selected_child.dart';
 import '../home/tab_index.dart';
 import 'task_status_view.dart';
+import '../../shared/gradient_app_bar.dart';
 
 enum _Filter { all, pending, done }
 
@@ -29,7 +30,7 @@ class _TimelineScreenState extends ConsumerState<TimelineScreen> {
     final child = ref.watch(selectedChildProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('타임라인')),
+      appBar: GradientAppBar(title: const Text('타임라인')),
       body: child == null
           ? NoChildView(
               onGoHome: () =>
