@@ -8,14 +8,12 @@ List<Color> headerGradient(BuildContext context) =>
         ? const [Color(0xFF1F5F68), Color(0xFF2A7F8C)]
         : const [AppColors.mint, Color(0xFF6CC9D3)];
 
-/// 홈 헤더와 같은 느낌의 상단 바: 민트 그라데이션 + 아래 모서리 둥글게.
+/// 홈 헤더와 같은 느낌의 상단 바: 민트 그라데이션 (모서리는 직선).
 class GradientAppBar extends StatelessWidget implements PreferredSizeWidget {
   const GradientAppBar({super.key, required this.title, this.actions});
 
   final Widget title;
   final List<Widget>? actions;
-
-  static const _radius = BorderRadius.vertical(bottom: Radius.circular(24));
 
   @override
   Size get preferredSize => const Size.fromHeight(64);
@@ -28,11 +26,9 @@ class GradientAppBar extends StatelessWidget implements PreferredSizeWidget {
       toolbarHeight: 64,
       backgroundColor: Colors.transparent,
       scrolledUnderElevation: 0,
-      shape: const RoundedRectangleBorder(borderRadius: _radius),
       // Container는 자식이 없으면 영역을 가득 채운다 (DecoratedBox는 0 크기가 됨).
       flexibleSpace: Container(
         decoration: BoxDecoration(
-          borderRadius: _radius,
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,

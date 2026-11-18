@@ -124,7 +124,6 @@ class _HomeHeader extends StatelessWidget {
           end: Alignment.bottomRight,
           colors: headerGradient(context),
         ),
-        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(28)),
       ),
       child: SafeArea(
         bottom: false,
